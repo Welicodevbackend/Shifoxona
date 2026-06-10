@@ -268,15 +268,20 @@ urlpatterns = [
 
 
 
-  
+
 
 
 ]
-
-# Media fayllar uchun (rasmlar va h.k.)
+from django.views.static import serve
+from django.urls import re_path
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# 404 xatolikni boshqarish
+# 2. Render serverida (DEBUG = False bo'lganda ham) media rasmlarni ochish uchun majburiy ruxsat:
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
+
+# 404 xatolikni boshqarish (bunga tegmang, tursin)
 handler404 = 'mainApp.views.custom_404'
