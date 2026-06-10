@@ -12,8 +12,7 @@ from django.http import JsonResponse
 from django.db.models import Q,F
 from django.contrib.auth import authenticate, update_session_auth_hash
 # from google import genai
-import google.generativeai as genai
-import google.generativeai as genai
+
 from django.http import JsonResponse
 from .models import Department
 import traceback
@@ -2772,7 +2771,7 @@ def get_doctors_by_dept(request):
 
 import json
 import os
-import google.generativeai as genai
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
