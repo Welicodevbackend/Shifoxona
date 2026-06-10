@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+
+    <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; height: 100vh; overflow: hidden; } /* Body skrol bo'lmasligi kerak */
+    #sidebar { min-width: 260px; max-width: 260px; height: 100vh; background: #2c3e50; color: #fff; position: sticky; top: 0; }
+
+    .content-area {
+        width: 100%;
+        height: 100vh; /* Balandlik ekranga teng */
+        overflow-y: auto; /* Faqat shu qism skrol bo'ladi */
+        padding: 25px;
+    }
+
+    .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: white !important;
+        margin-bottom: 20px;
+    }
+    /* ... qolgan stillar ... */
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bobur Doktor Shifo{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+        #sidebar { min-width: 260px; max-width: 260px; min-height: 100vh; background: #2c3e50; color: #fff; transition: all 0.3s; position: sticky; top: 0; }
+        #sidebar .sidebar-header { padding: 25px 20px; background: #1a252f; text-align: center; border-bottom: 1px solid #34495e; }
+        #sidebar .sidebar-header h4 { font-weight: 700; color: #3498db; margin-bottom: 0; }
+        #sidebar ul li a { padding: 12px 20px; font-size: 1rem; display: block; color: #bdc3c7; text-decoration: none; transition: 0.2s; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover { color: #fff; background: #34495e; border-left: 4px solid #3498db; }
+        #sidebar ul li.active > a { color: #fff; background: #34495e; border-left: 4px solid #3498db; }
+        .content-area { width: 100%; padding: 25px; }
+        .navbar { border: none; box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important; }
+        .user-name-box { font-weight: 600; color: #2c3e50; }
+        hr.sidebar-divider { border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 20px; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h4>BDS ADMIN</h4>
+            <small class="text-muted">Bobur Doktor Shifo</small>
+        </div>
+
+        <ul class="list-unstyled components mt-3">
+    <li class="{% if request.resolver_match.url_name == 'dashboard_reseption_index_dashboard' %}active{% endif %}">
+        <a href="{% url 'dashboard_reseption_index_dashboard' %}">
+            <i class="fas fa-chart-line me-2"></i> Dashboard
+        </a>
+    </li>
+            <hr class="sidebar-divider">
+            <li class="{% if request.resolver_match.url_name == 'departments_list' %}active{% endif %}">
+                <a href="{% url 'departments_list' %}"><i class="fas fa-hospital me-2"></i> Bo'limlar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'services_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'services_list_dashboard' %}"><i class="fas fa-concierge-bell me-2"></i> Xizmatlar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'doctors_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'doctors_list_dashboard' %}"><i class="fas fa-user-md me-2"></i> Shifokorlar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'patients_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'patients_list_dashboard' %}"><i class="fas fa-users me-2"></i> Bemorlar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'lab_tests_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'lab_tests_list_dashboard' %}"><i class="fas fa-microscope me-2"></i> Laboratoriya</a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="{% if request.resolver_match.url_name == 'dashboard_online_appointments_list' %}active{% endif %}">
+                <a href="{% url 'dashboard_online_appointments_list' %}" class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-globe me-2"></i> Online Navbatlar</span>
+                    {% if new_appointments_count > 0 %}
+                        <span id="global-navbat-badge" class="badge rounded-pill bg-danger shadow-sm">{{ new_appointments_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'appointments_list' %}active{% endif %}">
+                <a href="{% url 'appointments_list' %}"><i class="fas fa-calendar-check me-2"></i> Qabullar (Navbatlar)</a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="{% if request.resolver_match.url_name == 'medical_records_list' %}active{% endif %}">
+                <a href="{% url 'medical_records_list' %}"><i class="fas fa-file-medical me-2"></i> Tibbiy Kartalar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'dashboard_payments_list' %}active{% endif %}">
+                <a href="{% url 'dashboard_payments_list' %}"><i class="fas fa-money-bill-wave me-2"></i> To'lovlar</a>
+            </li>
+            <li class="{% if request.resolver_match.url_name == 'contact_messages_list' %}active{% endif %}">
+                <a href="{% url 'contact_messages_list' %}" class="d-flex justify-content-between align-items-center">
+                    <div><i class="fas fa-envelope me-2"></i> Xabarlar</div>
+                    {% if unread_count > 0 %}
+                    <span class="badge rounded-pill bg-danger shadow-sm" style="font-size: 10px; padding: 4px 8px; animation: pulse 2s infinite;">
+                        {{ unread_count }}
+                    </span>
+                    {% endif %}
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content-area">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 rounded-3 p-3">
+            <div class="container-fluid">
+                <span class="navbar-brand fw-bold text-muted">Boshqaruv Paneli</span>
+
+                <div class="d-flex align-items-center">
+                    <div class="me-3 text-end">
+                        <span class="d-block small text-muted">Xush kelibsiz,</span>
+                        <span class="user-name-box">
+                            {% if request.user.staff_profile %}
+                                {{ request.user.staff_profile.full_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-circle shadow-sm" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 45px; height: 45px;">
+                            <i class="fas fa-user text-primary"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item py-2" href="{% url 'profile_verify' %}"><i class="fas fa-id-card me-2 text-muted"></i> Profil</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'change_password_verify' %}"><i class="fas fa-key me-2 text-muted"></i> Parolni o'zgartirish</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="px-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm w-100 text-start">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Chiqish
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="animate-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Online navbatlar uchun yangilanish skripti
+    let lastCount = {{ new_appointments_count|default:0 }};
+    let isIdle = false;
+    let idleTimer;
+
+    function resetIdleTimer() {
+        isIdle = false;
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { isIdle = true; }, 300000);
+    }
+
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    resetIdleTimer();
+
+    function checkNewOnlineAppointments() {
+        if (document.hidden || isIdle) return;
+
+        fetch('/dashboard/check-appointments/')
+            .then(res => res.json())
+            .then(data => {
+                const currentCount = data.unread_count;
+                if (currentCount > lastCount) {
+                    // Yangi navbat xabari (Toast yoki Alert)
+                }
+                const badge = document.getElementById('global-navbat-badge');
+                if (badge) {
+                    if (currentCount > 0) {
+                        badge.innerText = currentCount;
+                        badge.classList.remove('d-none');
+                    } else {
+                        badge.classList.add('d-none');
+                    }
+                }
+                lastCount = currentCount;
+            })
+            .catch(err => console.error("Xatolik:", err));
+    }
+    setInterval(checkNewOnlineAppointments, 10000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <a href="{% url 'appointments_list' %}" class="text-muted text-decoration-none small">
+            <i class="fas fa-chevron-left me-1"></i> Orqaga qaytish
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="ms-3">
+                    <h3 class="fw-bold m-0">{{ appointment.patient_name }}</h3>
+                    <div class="d-flex gap-2 mt-1">
+                        <span class="badge bg-light text-primary border">ID: #{{ appointment.id }}</span>
+                        <span class="badge 
+                            {% if appointment.status == 'waiting' %}bg-warning
+                            {% elif appointment.status == 'completed' %}bg-success
+                            {% elif appointment.status == 'cancelled' %}bg-danger
+                            {% else %}bg-info{% endif %}">
+                            {{ appointment.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'appointment_edit' appointment.id %}" class="btn btn-warning btn-sm px-3 text-white">
+                    <i class="fas fa-edit me-1"></i> Tahrirlash
+                </a>
+                <button type="button" class="btn btn-danger btn-sm px-3" onclick="openDeleteModal()">
+                    <i class="fas fa-trash me-1"></i> O'chirish
+                </button>
+            </div>
+        </div>
+
+        <hr class="text-muted opacity-25">
+
+        <div class="row g-4 mt-2">
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Bemor Telefoni</label>
+                <span class="fw-bold">{{ appointment.patient_phone }}</span>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Qabul vaqti</label>
+                <span class="fw-bold text-primary">{{ appointment.date|date:"d.m.Y" }} | {{ appointment.time_slot|time:"H:i" }}</span>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Bo'lim / Shifokor</label>
+                <span class="fw-bold">{{ appointment.department.name }} / {{ appointment.doctor.full_name }}</span>
+            </div>
+            <div class="col-md-12">
+                <label class="text-muted small d-block">Tanlangan Xizmat</label>
+                <span class="fw-bold text-success">
+                    {% if appointment.service %}{{ appointment.service.name }} (Xizmat)
+                    {% elif appointment.lab_test %}{{ appointment.lab_test.name }} (Laboratoriya)
+                    {% else %}Shifokor ko'rigi (Konsultatsiya){% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <h5 class="fw-bold">O'chirishni tasdiqlaysizmi?</h5>
+                <p class="text-muted small">Ushbu navbatni qayta tiklab bo'lmaydi.</p>
+                <form action="{% url 'appointment_delete' appointment.id %}" method="POST" class="d-flex justify-content-center gap-2 mt-4">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Yo'q</button>
+                    <button type="submit" class="btn btn-danger px-4">O'chirilsin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal() {
+        new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+    }
+</script>
+{% endblock %}

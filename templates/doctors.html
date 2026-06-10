@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="main">
+<!--    <div class="page-title" style="background: url('{% if settings.doctors_header_bg %}{{ settings.doctors_header_bg.url }}{% else %}{% static 'assets/img/ssss.jpg' %}{% endif %}') center no-repeat; background-size: cover; padding: 140px 0 60px 0; position: relative;">-->
+<!--        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.15);"></div>-->
+<!--        <div class="container text-center" style="position: relative; z-index: 1;">-->
+<!--            <h1 class="fw-bold text-dark">Bizning Shifokorlar</h1>-->
+<!--            <p class="text-dark fw-medium">Bizning shifokorlarimizni tez tanlashda imkon mavjud.</p>-->
+<!--        </div>-->
+<!--    </div>-->
+    {% load static %}
+
+<div class="page-title" style="background: url('{% if settings.doctors_header_bg %}{{ settings.doctors_header_bg.url }}{% else %}{% static 'assets/img/ssss.jpg' %}{% endif %}') center 25% no-repeat; background-size: cover; padding: 150px 0 30px 0; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);"></div>
+
+    <div class="container text-center" style="position: relative; z-index: 1;">
+        <h1 class="text-white fw-bold display-4">Bizning Shifokorlar</h1>
+
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+            <li class="breadcrumb-item">
+              <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+            </li>
+            <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+              Shifokorlar
+            </li>
+          </ol>
+        </nav>
+    </div>
+</div>
+
+<!--    <section class="doctors-section py-5" style="background-color: #f4f7f9;">-->
+<!--        <div class="container">-->
+
+<!--            <div class="row mb-5">-->
+<!--                <div class="col-12 d-flex flex-wrap justify-content-center gap-3" id="doctor-filters">-->
+<!--                    <button class="btn btn-filter active" data-filter="*">Hammasi</button>-->
+<!--                    {% for dept in departments %}-->
+<!--                        <button class="btn btn-filter" data-filter=".dept-{{ dept.id }}">{{ dept.name }}</button>-->
+<!--                    {% endfor %}-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="row g-4 isoto-grid">-->
+<!--                {% for doctor in doctors %}-->
+<!--                <div class="col-lg-3 col-md-6 grid-item dept-{{ doctor.department.id }}">-->
+<!--                    <div class="card h-100 text-center border-0 shadow-sm p-4" style="border-radius: 20px;">-->
+
+<!--                        <div class="doctor-img-container mb-3">-->
+<!--                            <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="rounded-circle shadow-sm" style="width: 160px; height: 160px; object-fit: cover; border: 4px solid #fff;">-->
+<!--                        </div>-->
+
+<!--                        <div class="card-body p-0">-->
+<!--                            <h5 class="fw-bold mb-1" style="color: #2c3155; font-size: 1.15rem;">{{ doctor.full_name }}</h5>-->
+<!--                            <p class="text-primary small fw-bold mb-3">-->
+<!--                                {% if doctor.doctor_details %}-->
+<!--                                    {{ doctor.doctor_details.specialization|upper }}-->
+<!--                                {% else %}-->
+<!--                                    MUTAXASSIS-->
+<!--                                {% endif %}-->
+<!--                            </p>-->
+
+<!--                            <div class="work-hours-box border-top pt-3">-->
+<!--                                <div class="d-flex justify-content-between mb-1">-->
+<!--                                    <span class="text-muted small">Dush - Sesh</span>-->
+<!--                                    <span class="fw-bold small" style="color: #555;">09.00 : 17.00</span>-->
+<!--                                </div>-->
+<!--                                <div class="d-flex justify-content-between mb-1">-->
+<!--                                    <span class="text-muted small">Chor - Pay</span>-->
+<!--                                    <span class="fw-bold small" style="color: #555;">09.00 : 17.00</span>-->
+<!--                                </div>-->
+<!--                                <div class="d-flex justify-content-between">-->
+<!--                                    <span class="text-muted small">Jum - Shan</span>-->
+<!--                                    <span class="fw-bold small" style="color: #555;">09.00 : 16.00</span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <a href="{% url 'contact' %}" class="btn btn-outline-info w-100 mt-4 rounded-pill fw-bold py-2 shadow-sm transition-all">-->
+<!--                                Batafsil-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                {% empty %}-->
+<!--                <div class="col-12 text-center py-5">-->
+<!--                    <p class="text-muted">Hozircha bu bo'limda shifokorlar mavjud emas.</p>-->
+<!--                </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </section>-->
+
+<!--    <section class="doctors-section py-5" style="background-color: #f8fafc;">-->
+<!--    <div class="container">-->
+<!--        <div class="row mb-5">-->
+<!--            <div class="col-12 d-flex flex-wrap justify-content-center gap-2" id="doctor-filters">-->
+<!--                <button class="btn btn-filter active" data-filter="*">Hammasi</button>-->
+<!--                {% for dept in departments %}-->
+<!--                    <button class="btn btn-filter" data-filter=".dept-{{ dept.id }}">{{ dept.name }}</button>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="row g-3 isoto-grid"> {% for doctor in doctors %}-->
+<!--            <div class="col-xl-3 col-lg-3 col-md-6 grid-item dept-{{ doctor.department.id }}">-->
+<!--                <div class="card h-100 border-0 shadow-sm overflow-hidden doctor-main-card" style="border-radius: 12px;">-->
+
+<!--                    <div class="doctor-img-wrapper" style="height: 280px;"> <a href="{% url 'doctor_detail' doctor.id %}">-->
+<!--                            <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="doctor-img-square">-->
+<!--                        </a>-->
+<!--                        <div class="doctor-overlay"></div>-->
+<!--                        <div class="doctor-info-on-image text-center w-100">-->
+<!--                            <h5 class="fw-bold text-white mb-0" style="font-size: 1.1rem;">{{ doctor.full_name }}</h5>-->
+<!--                            <p class="specialty-tag text-uppercase mb-0" style="font-size: 0.7rem; color: #00d2ff;">-->
+<!--                                {% if doctor.doctor_details %}-->
+<!--                                    {{ doctor.doctor_details.specialization }}-->
+<!--                                {% else %}-->
+<!--                                    Mutaxassis-->
+<!--                                {% endif %}-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="card-body p-3 bg-white">-->
+<!--                        <div class="work-schedule-mini mb-3">-->
+<!--    <div class="d-flex justify-content-between align-items-center mb-2">-->
+<!--        <div class="schedule-label">-->
+<!--            <i class="bi bi-calendar3 me-2 custom-icon"></i>Dush - Sesh-->
+<!--        </div>-->
+<!--        <div class="schedule-time">09:00 - 17:00</div>-->
+<!--    </div>-->
+
+<!--    <div class="d-flex justify-content-between align-items-center mb-2">-->
+<!--        <div class="schedule-label">-->
+<!--            <i class="bi bi-calendar3 me-2 custom-icon"></i>Chor - Pay-->
+<!--        </div>-->
+<!--        <div class="schedule-time">09:00 - 17:00</div>-->
+<!--    </div>-->
+
+<!--    <div class="d-flex justify-content-between align-items-center">-->
+<!--        <div class="schedule-label">-->
+<!--            <i class="bi bi-calendar3 me-2 custom-icon"></i>Jum - Shan-->
+<!--        </div>-->
+<!--        <div class="schedule-time">09:00 - 16:00</div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--                        <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-detail-custom w-100 rounded-3 fw-bold py-2 shadow-sm">-->
+<!--                            Batafsil ma'lumot-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+
+    <section class="doctors-section py-5" style="background-color: #f8fafc;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 d-flex flex-wrap justify-content-center gap-2" id="doctor-filters">
+                <button class="btn btn-filter active" data-filter="*">Hammasi</button>
+                {% for spec in specializations %}
+                    <button class="btn btn-filter" data-filter=".{{ spec|slugify }}">{{ spec }}</button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row g-3 isoto-grid">
+            {% for doctor in doctors %}
+            <div class="col-xl-3 col-lg-3 col-md-6 grid-item {{ doctor.doctor_details.specialization|slugify }}">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden doctor-main-card" style="border-radius: 12px;">
+
+                    <div class="doctor-img-wrapper" style="height: 280px;">
+                        <a href="{% url 'doctor_detail' doctor.id %}">
+                            <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="doctor-img-square">
+                        </a>
+                        <div class="doctor-overlay"></div>
+                        <div class="doctor-info-on-image text-center w-100">
+                            <h5 class="fw-bold text-white mb-0" style="font-size: 1.1rem;">{{ doctor.full_name }}</h5>
+                            <p class="specialty-tag text-uppercase mb-0" style="font-size: 0.7rem; color: #00d2ff;">
+                                {% if doctor.doctor_details %}
+                                    {{ doctor.doctor_details.specialization }}
+                                {% else %}
+                                    Mutaxassis
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-3 bg-white">
+                        <div class="work-schedule-mini mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1 p-1 py-2 rounded-3 hover-bg-light transition-all">
+        <div class="schedule-label d-flex align-items-center fw-bold text-dark small" style="font-size: 0.75rem;">
+            <div class="icon-box me-2 bg-primary-subtle text-primary rounded-2 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;">
+                <i class="bi bi-calendar3" style="font-size: 0.7rem;"></i>
+            </div>
+            Dush - Sesh
+        </div>
+        <div class="schedule-time badge bg-light text-primary border rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.7rem;">
+            09:00 - 17:00
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-1 p-1 py-2 rounded-3 hover-bg-light transition-all">
+        <div class="schedule-label d-flex align-items-center fw-bold text-dark small" style="font-size: 0.75rem;">
+            <div class="icon-box me-2 bg-primary-subtle text-primary rounded-2 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;">
+                <i class="bi bi-calendar3" style="font-size: 0.7rem;"></i>
+            </div>
+            Chor - Pay
+        </div>
+        <div class="schedule-time badge bg-light text-primary border rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.7rem;">
+            09:00 - 17:00
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center p-1 py-2 rounded-3 hover-bg-light transition-all">
+        <div class="schedule-label d-flex align-items-center fw-bold text-dark small" style="font-size: 0.75rem;">
+            <div class="icon-box me-2 bg-info-subtle text-info rounded-2 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;">
+                <i class="bi bi-calendar3" style="font-size: 0.7rem;"></i>
+            </div>
+            Jum - Shan
+        </div>
+        <div class="schedule-time badge bg-light text-info border rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.7rem;">
+            09:00 - 16:00
+        </div>
+    </div>
+                        </div>
+
+                        <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-detail-custom w-100 rounded-3 fw-bold py-2 shadow-sm">
+                            Batafsil ma'lumot
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Namunadagi ko'k tugma stili */
+    .btn-detail-custom {
+        background-color: #00a0e3;
+        color: white;
+        border: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+    }
+
+    .btn-detail-custom:hover {
+        background-color: #0084bc;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Rasm ustidagi matnlar uchun */
+    .doctor-img-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .doctor-img-square {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+    }
+
+    .doctor-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0, 48, 100, 0.8) 0%, transparent 100%);
+    }
+
+    .doctor-info-on-image {
+        position: absolute;
+        bottom: 15px;
+        z-index: 2;
+    }
+
+    /* Kalendar ikonkalari uchun rang va o'lcham */
+    .bi-calendar4-week {
+        font-size: 0.9rem;
+        opacity: 0.7;
+    }
+
+    /* Filtr tugmalari kichikroq va yumaloq */
+    .btn-filter {
+        border: 1px solid #e2e8f0;
+        background: white;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #64748b;
+        transition: 0.3s;
+    }
+
+    .btn-filter.active {
+        background: #00a0e3 !important;
+        border-color: #00a0e3 !important;
+        color: white !important;
+    }
+</style>
+
+<style>
+    /* Karta asosiy stili */
+    .doctor-main-card {
+        border-radius: 15px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .doctor-main-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Rasm dizayni - To'liq to'rtburchak */
+    .doctor-img-wrapper {
+        position: relative;
+        height: 400px; /* Balandlikni namunadagidek kattalashtirdik */
+        overflow: hidden;
+    }
+
+    .doctor-img-square {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        transition: transform 0.5s ease;
+    }
+
+    .doctor-main-card:hover .doctor-img-square {
+        transform: scale(1.08);
+    }
+
+    /* Gradient Overlay */
+    .doctor-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60%;
+        background: linear-gradient(to top, rgba(13, 33, 67, 0.9) 0%, rgba(13, 33, 67, 0.4) 50%, transparent 100%);
+    }
+
+    /* Rasm ustidagi matn */
+    .doctor-info-on-image {
+        position: absolute;
+        bottom: 25px;
+        z-index: 2;
+        padding: 0 15px;
+    }
+
+    .specialty-tag {
+        color: #00d2ff;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        font-size: 0.85rem;
+    }
+
+    /* Tugma stili */
+    .btn-primary-custom {
+        background-color: #00a0e3;
+        color: white;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: #0084bc;
+        color: white;
+    }
+
+    /* Filtr tugmalari */
+    .btn-filter {
+        border: none;
+        background: white;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .btn-filter.active {
+        background: #00a0e3 !important;
+        color: white !important;
+    }
+</style>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+<style>
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    .hover-bg-light:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px); /* O'ngga biroz surilish effekti */
+    }
+
+    .schedule-container {
+        max-width: 350px; /* Sidebar kengligiga moslash uchun */
+    }
+
+    .icon-box i {
+        font-size: 0.9rem;
+    }
+
+    .schedule-time {
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+    }
+
+    /* Bootstrap-subtle ranglari agar kutubxonada bo'lmasa: */
+    .bg-primary-subtle { background-color: #e7f1ff !important; }
+    .bg-info-subtle { background-color: #e0f7fa !important; }
+</style>
+<script>
+    $(document).ready(function() {
+        var $grid = $('.isoto-grid').isotope({
+            itemSelector: '.grid-item',
+            layoutMode: 'fitRows',
+            percentPosition: true
+        });
+
+        $grid.imagesLoaded().progress(function() {
+            $grid.isotope('layout');
+        });
+
+        $('#doctor-filters').on('click', 'button', function() {
+            var filterValue = $(this).attr('data-filter');
+            $grid.isotope({ filter: filterValue });
+            $('#doctor-filters button').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
+
+<style>
+    /* Yo'nalish tugmalari yangilangan dizayni */
+    .btn-filter {
+        border: 1px solid #dee2e6;
+        background-color: #ffffff;
+        color: #495057;
+        border-radius: 12px;
+        padding: 10px 22px;
+        font-size: 15px; /* Kattaroq shrift */
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .btn-filter:hover {
+        background-color: #e9ecef;
+        border-color: #00a0e3;
+        color: #00a0e3;
+        transform: translateY(-2px);
+    }
+
+    .btn-filter.active {
+        background-color: #00a0e3 !important;
+        border-color: #00a0e3 !important;
+        color: #ffffff !important;
+        box-shadow: 0 5px 15px rgba(0, 160, 227, 0.3);
+    }
+
+    .card {
+        transition: all 0.4s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+    }
+
+    .btn-outline-info {
+        border: 2px solid #00a0e3;
+        color: #00a0e3;
+    }
+
+    .btn-outline-info:hover {
+        background-color: #00a0e3 !important;
+        color: white !important;
+        transform: scale(1.02);
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

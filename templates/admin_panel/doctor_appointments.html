@@ -1,0 +1,173 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Barcha navbatlar (Online & Klinika)</h3>
+        <span class="badge bg-primary px-3 py-2">Bugun: {{ today|date:"d-F, Y" }}</span>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th>Vaqt / Sana</th>
+                        <th>Bemor</th>
+                        <th>Manba</th>
+                        <th>Xizmat / Eslatma</th>
+                        <th class="text-end">Amal / Holat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in appointments %}
+                    <tr id="row-{{ app.id }}" {% if app.date == today %}style="background-color: rgba(56, 189, 248, 0.05);"{% endif %}>
+                        <td>
+                            <div class="fw-bold text-dark">{{ app.time_slot|time:"H:i" }}</div>
+                            <small class="text-muted">{{ app.date|date:"d.m.Y" }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-primary">{{ app.patient_name }}</div>
+                            <small class="text-muted"><i class="fas fa-phone-alt me-1" style="font-size: 10px;"></i>{{ app.patient_phone }}</small>
+                        </td>
+                        <td>
+                            {% if app.is_confirmed is not None %}
+                                <span class="badge bg-soft-success text-success" style="background: #dcfce7;">
+                                    <i class="fas fa-globe me-1"></i> Online
+                                </span>
+                            {% else %}
+                                <span class="badge bg-soft-info text-info" style="background: #e0f2fe;">
+                                    <i class="fas fa-hospital me-1"></i> Klinika
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.is_consultation %}
+                                <small>Konsultatsiya</small>
+                            {% elif app.service %}
+                                <small>{{ app.service.name }}</small>
+                            {% elif app.lab_test %}
+                                <small>Lab: {{ app.lab_test.name }}</small>
+                            {% else %}
+                                <small class="text-muted">{{ app.notes|default:"-" }}</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end align-items-center gap-2">
+                                {% if app.status == 'waiting' or app.is_confirmed == False %}
+                                    <button id="btn-{{ app.id }}"
+                                            onclick="markReceived({{ app.id }}, '{% if app.is_confirmed is not None %}online{% else %}clinic{% endif %}', this)"
+                                            class="btn btn-sm btn-success rounded-pill px-3 border-0 shadow-sm">
+                                        <i class="fas fa-check me-1"></i> Qabul qilindi
+                                    </button>
+                                {% endif %}
+
+                                <div class="status-container">
+                                    {% if app.status == 'received' or app.is_confirmed == True %}
+                                        <span class="badge bg-success shadow-sm">
+                                            <i class="fas fa-check-double me-1"></i> Tasdiqlangan
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark shadow-sm">Kutilmoqda</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-calendar-times fa-3x mb-3 d-block opacity-25"></i>
+                            Hozircha yangi navbatlar yo'q
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sahifa yuklanganda oxirgi sonni bazadagi son bilan tenglashtiramiz
+    let lastCount = parseInt("{{ today_my_apps_count|default:0 }}");
+
+    function checkNewAppointments() {
+        fetch("{% url 'check_new_appointments' %}")
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('navbat-count');
+                if (!badge) return;
+
+                const newCount = parseInt(data.count);
+
+                // 1. Agar yangi bemorlar bo'lsa (0 dan katta)
+                if (newCount > 0) {
+                    badge.innerText = newCount;
+
+                    // Agar oldin yopiq bo'lsa yoki ko'rinmayotgan bo'lsa, ochamiz
+                    if (badge.style.display === 'none' || badge.style.display === '') {
+                        badge.style.setProperty('display', 'flex', 'important');
+                    }
+
+                    // 2. Agar yangi xabar kelsa (soni ko'paysa), silkitalish animatsiyasi
+                    if (newCount > lastCount && lastCount !== -1) {
+                        badge.classList.add('badge-shake');
+                        setTimeout(() => badge.classList.remove('badge-shake'), 1000);
+                    }
+                }
+                // 3. Agar hamma bemor o'qilgan bo'lsa (0 bo'lsa)
+                else {
+                    badge.style.display = 'none';
+                }
+
+                // Oxirgi qiymatni yangilab boramiz
+                lastCount = newCount;
+            })
+            .catch(err => console.error("Aloqa xatosi:", err));
+    }
+
+    // Har 10 soniyada tekshirish
+    setInterval(checkNewAppointments, 10000);
+
+    // Sahifa yuklanganda darhol bir marta tekshirish (miltillashni oldini olish uchun)
+    document.addEventListener('DOMContentLoaded', checkNewAppointments);
+    function markReceived(appId, appType, btn) {
+    // API manzili: url 'mark_as_received' appId va appType bilan
+    const url = `/doctor/mark-received/${appId}/${appType}/`;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // 1. Tugmani yashirish
+            btn.style.display = 'none';
+
+            // 2. "Kutilmoqda" yozuvini "Tasdiqlangan"ga aylantirish
+            const row = document.getElementById(`row-${appId}`);
+            const statusContainer = row.querySelector('.status-container');
+            statusContainer.innerHTML = `
+                <span class="badge bg-success shadow-sm">
+                    <i class="fas fa-check-double me-1"></i> Tasdiqlangan
+                </span>
+            `;
+
+            // 3. Qatordagi ko'k fonni o'chirish (ixtiyoriy)
+            row.style.backgroundColor = 'transparent';
+        } else {
+            alert("Xatolik yuz berdi!");
+        }
+    })
+    .catch(err => {
+        console.error("Xato:", err);
+        alert("Server bilan aloqa uzildi!");
+    });
+}
+</script>
+
+{% endblock %}

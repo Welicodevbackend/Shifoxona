@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid p-0 mb-5">
+    <div class="position-relative d-flex align-items-center justify-content-center"
+         style="height: 350px; overflow: hidden; background-color: #1a3c71;">
+
+        <img src="{% static 'assets/img/ssss.jpg' %}" alt="Header Background"
+             class="position-absolute w-100 h-100"
+             style="object-fit: cover; object-position: center; filter: brightness(0.4) opacity(0.6);">
+
+        <div class="position-relative text-center w-100 px-3" style="z-index: 2;">
+            <h1 class="text-white fw-bold mb-2"
+                style="font-size: 3.5rem; text-shadow: 2px 2px 15px rgba(0,0,0,0.5); letter-spacing: 1px;">
+                Shifokor
+            </h1>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center bg-transparent p-0 mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'doctors_list' %}" class="text-white-50 text-decoration-none">Shifokor</a>
+                    </li>
+                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+                        Batafsil
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-5 bg-white">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 10px;">
+                    <img class="img-fluid w-100"
+                         src="{{ doctor.staff.photo.url }}"
+                         alt="{{ doctor.staff.full_name }}"
+                         style="height: 420px; object-fit: cover; object-position: top;">
+                    <div class="card-body bg-white text-center py-4">
+                        <h4 class="fw-bold mb-1 text-dark">{{ doctor.staff.full_name }}</h4>
+                        <p class="text-primary fw-bold mb-2 small">{{ doctor.specialization }}</p>
+                        <div class="badge bg-light text-muted px-3 py-2" style="font-weight: 500;">Mehnat staji: {{ doctor.experience_years }} yil</div>
+                    </div>
+                </div>
+
+                <div class="bg-light rounded p-4 mb-4 shadow-sm border-0">
+                    <h5 class="fw-bold mb-4 text-dark border-bottom pb-3" style="font-size: 1rem; letter-spacing: 1px;">SHAXSIY MA'LUMOTLAR</h5>
+                    <div class="mb-3">
+                        <p class="text-dark fw-bold mb-0 small">Telefon:</p>
+                        <p class="text-muted mb-0 small">{{ doctor.staff.phone }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-dark fw-bold mb-0 small">Ofis:</p>
+                        <p class="text-muted mb-0 small">+998 71 205 15 14</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-dark fw-bold mb-0 small">E-mail:</p>
+                        <p class="text-muted text-break mb-0 small">{{ doctor.staff.social_contacts.email|default:"info@mtm.uz" }}</p>
+                    </div>
+
+                    <div class="d-flex pt-2 border-top mt-3">
+                        {% with social=doctor.staff.social_contacts %}
+                            <a class="text-info me-3" href="{{ social.telegram|default:'#' }}"><i class="fab fa-telegram-plane fs-5"></i></a>
+                            <a class="text-danger me-3" href="{{ social.instagram|default:'#' }}"><i class="fab fa-instagram fs-5"></i></a>
+                            <a class="text-primary" href="{{ social.facebook|default:'#' }}"><i class="fab fa-facebook-f fs-5"></i></a>
+                        {% endwith %}
+                    </div>
+                </div>
+
+                <div class="bg-info text-white rounded p-4 shadow-sm d-flex align-items-center mb-4" style="transition: 0.3s;">
+                    <div class="bg-white text-info rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <i class="fa fa-phone-alt"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-0 small" style="opacity: 0.9;">Biz bilan aloqa</h6>
+                        <h5 class="text-white mb-0 fw-bold" style="font-size: 1.1rem;">+998 71 205 15 14</h5>
+                    </div>
+                </div>
+
+                <div class="bg-primary rounded p-4 shadow-sm text-white" style="border-radius: 10px;">
+                    <h5 class="text-white mb-3"><i class="bi bi-clock-fill me-2"></i> Navbat Olish</h5>
+                    <form action="{% url 'book_appointment' %}" method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-2">
+                            <label class="small text-white-50 ms-1">Bo'lim:</label>
+                            <input type="text" class="form-control border-0 py-2 bg-white-50" value="{{ doctor.staff.department.name }}" readonly style="border-radius: 8px; background-color: rgba(255,255,255,0.9);">
+                            <input type="hidden" name="department" value="{{ doctor.staff.department.id }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="small text-white-50 ms-1">Shifokor:</label>
+                            <input type="text" class="form-control border-0 py-2 bg-white-50" value="{{ doctor.staff.full_name }}" readonly style="border-radius: 8px; background-color: rgba(255,255,255,0.9);">
+                            <input type="hidden" name="doctor" value="{{ doctor.staff.id }}">
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <div class="mb-2">
+                            <input type="text" name="patient_name" class="form-control border-0 py-2" placeholder="Ismingiz *" required style="border-radius: 8px;">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="patient_phone" class="form-control border-0 py-2" placeholder="Telefon *" required style="border-radius: 8px;">
+                        </div>
+                        <div class="mb-2">
+                            <input type="date" name="date" id="sidebarDateInput" class="form-control border-0 py-2" required style="border-radius: 8px;">
+                        </div>
+                        <div class="mb-2">
+                            <select name="time_slot" id="sidebarTimeSelect" class="form-select border-0 py-2" required disabled style="border-radius: 8px;">
+                                <option value="" selected disabled>Vaqtni tanlang *</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <textarea name="notes" class="form-control border-0 py-2" placeholder="Shikoyatingiz (ixtiyoriy)" rows="3" style="border-radius: 8px;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-light w-100 fw-bold text-primary mt-2 py-3" style="border-radius: 8px;">TASDIQLASH</button>
+                    </form>
+                </div>
+                </div>
+
+            <div class="col-lg-8">
+                <div class="mb-5">
+                    <h4 class="fw-bold mb-2 text-dark">Men haqimda:</h4>
+                    <div class="bg-primary mb-4" style="width: 45px; height: 3px; border-radius: 10px;"></div>
+                    <h6 class="fw-bold text-primary mb-3">Vrach: {{ doctor.specialization }}</h6>
+
+                    <div class="text-muted lh-lg fs-6">
+                        {% for line in doctor.bio.splitlines %}
+                            {% if line.strip %}
+                                <p class="mb-3" style="color: #444; text-align: justify;">{{ line }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if doctor.staff.educations.all %}
+                <div class="mb-5">
+                    <h4 class="fw-bold mb-2 text-dark">Tahsil olgan:</h4>
+                    <div class="bg-info mb-4" style="width: 45px; height: 3px; border-radius: 10px;"></div>
+                    <div class="table-responsive shadow-lg border-0 rounded-4 overflow-hidden">
+                        <table class="table align-middle mb-0" style="background-color: #ffffff;">
+                            <thead style="background-color: #f0f9ff; border-bottom: 2px solid #e0f2fe;">
+                                <tr>
+                                    <th class="py-4 px-4 border-0 small fw-bold text-dark text-uppercase">Bitirgan yil</th>
+                                    <th class="py-4 border-0 small fw-bold text-dark text-uppercase">Mutaxassislik</th>
+                                    <th class="py-4 border-0 small fw-bold text-dark text-uppercase">Universitet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for edu in doctor.staff.educations.all %}
+                                <tr class="border-bottom">
+                                    <td class="px-4 py-4 text-dark"><span class="badge bg-light text-info border px-3 py-2">{{ edu.graduated_year }}</span></td>
+                                    <td class="py-4"><span class="fw-bold text-dark">{{ edu.specialization }}</span></td>
+                                    <td class="py-4 text-muted"><i class="fa fa-university me-2 text-primary"></i>{{ edu.university }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if doctor.staff.experiences.all %}
+                <div class="mb-5">
+                    <h4 class="fw-bold mb-2 text-dark">Ish tajribasi:</h4>
+                    <div class="bg-primary mb-4" style="width: 45px; height: 3px; border-radius: 10px;"></div>
+                    <div class="table-responsive shadow-lg border-0 rounded-4 overflow-hidden">
+                        <table class="table align-middle mb-0" style="background-color: #ffffff;">
+                            <thead style="background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th class="py-4 px-4 border-0 small fw-bold text-dark text-uppercase">Yillar</th>
+                                    <th class="py-4 border-0 small fw-bold text-dark text-uppercase">Bo'lim</th>
+                                    <th class="py-4 border-0 small fw-bold text-dark text-uppercase">Lavozim</th>
+                                    <th class="py-4 border-0 small fw-bold text-dark text-uppercase">Shifoxona</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exp in doctor.staff.experiences.all %}
+                                <tr class="border-bottom">
+                                    <td class="px-4 py-4 text-dark"><span class="badge bg-light text-primary border px-3 py-2">{{ exp.years }}</span></td>
+                                    <td class="py-4 text-dark">{{ exp.department }}</td>
+                                    <td class="py-4"><span class="fw-bold text-dark">{{ exp.position }}</span></td>
+                                    <td class="py-4 text-muted"><i class="fa fa-hospital-alt me-2 text-info"></i>{{ exp.hospital }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mb-5">
+                    <h4 class="fw-bold mb-2 text-dark">Shifokor qabuli:</h4>
+                    <div class="bg-primary mb-4" style="width: 40px; height: 2px;"></div>
+                    <div class="table-responsive shadow-sm border rounded">
+                        <table class="table table-hover align-middle mb-0 bg-light text-center">
+                            <thead class="bg-white">
+                                <tr>
+                                    <th class="py-3 px-4 small fw-bold text-dark">Kun</th>
+                                    <th class="py-3 small fw-bold text-dark">Vaqt</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-bottom-dashed">
+                <td class="py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="day-icon-circle bg-primary-subtle text-primary me-3">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div>
+                            <span class="d-block fw-bold text-dark small mb-0">Dushanba - Seshanba</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-end py-3">
+                    <span class="badge bg-light text-primary border fw-semibold rounded-pill px-3">
+                        <i class="bi bi-clock me-1"></i> 09:00 - 17:00
+                    </span>
+                </td>
+            </tr>
+
+            <tr class="border-bottom-dashed">
+                <td class="py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="day-icon-circle bg-primary-subtle text-primary me-3">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div>
+                            <span class="d-block fw-bold text-dark small mb-0">Chorshanba - Payshanba</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-end py-3">
+                    <span class="badge bg-light text-primary border fw-semibold rounded-pill px-3">
+                        <i class="bi bi-clock me-1"></i> 09:00 - 17:00
+                    </span>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="day-icon-circle bg-info-subtle text-info me-3">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div>
+                            <span class="d-block fw-bold text-dark small mb-0">Juma - Shanba</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-end py-3">
+                    <span class="badge bg-light text-info border fw-semibold rounded-pill px-3">
+                        <i class="bi bi-clock me-1"></i> 09:00 - 16:00
+                    </span>
+                </td>
+            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('sidebarDateInput');
+    const timeSelect = document.getElementById('sidebarTimeSelect');
+    const doctorId = "{{ doctor.staff.id }}";
+
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 30);
+
+    const formatDate = (date) => {
+        let d = new Date(date), month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        return [year, month, day].join('-');
+    };
+
+    dateInput.min = formatDate(today);
+    dateInput.max = formatDate(maxDate);
+
+    dateInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        if (selectedDate.getUTCDay() === 0) {
+            this.value = '';
+            Swal.fire({ icon: 'warning', title: 'Dam olish kuni', text: 'Yakshanba kuni qabul mavjud emas.', confirmButtonColor: '#00a0e3' });
+            return;
+        }
+
+        const date = this.value;
+        if (date) {
+            timeSelect.disabled = false;
+            timeSelect.innerHTML = '<option value="" selected disabled>Yuklanmoqda...</option>';
+
+            fetch(`/api/available-slots/?doctor=${doctorId}&date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    timeSelect.innerHTML = '<option value="" selected disabled>Vaqtni tanlang *</option>';
+                    if (data.available_slots && data.available_slots.length > 0) {
+                        data.available_slots.forEach(slot => {
+                            timeSelect.innerHTML += `<option value="${slot}">${slot}</option>`;
+                        });
+                    } else {
+                        timeSelect.innerHTML = '<option value="" disabled>Bo‘sh vaqt qolmadi</option>';
+                    }
+                });
+        }
+    });
+});
+
+{% if messages %}
+    {% for message in messages %}
+        (function() {
+            let msg = "{{ message|safe }}";
+            if (msg.startsWith("SUCCESS|")) {
+                let p = msg.split("|");
+                Swal.fire({
+                    title: 'Navbat tasdiqlandi!',
+                    icon: 'success',
+                    html: `<div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 2px dashed #00a0e3;">
+                            <p><b>Bemor:</b> ${p[1]}</p>
+                            <p><b>Shifokor:</b> ${p[3]}</p>
+                            <p><b>Sana:</b> ${p[4]}</p>
+                            <p><b>Vaqt:</b> ${p[5]}</p>
+                        </div>`,
+                    confirmButtonColor: '#00a0e3'
+                });
+            } else if (msg.startsWith("XATO|")) {
+                Swal.fire({ icon: 'error', title: 'Xatolik!', text: msg.split("|")[1] });
+            }
+        })();
+    {% endfor %}
+{% endif %}
+</script>
+<style>
+    /* Punktirli chegara effekti */
+    .border-bottom-dashed {
+        border-bottom: 1px dashed #dee2e6;
+    }
+
+    /* Kunlar uchun dumaloq icon foni */
+    .day-icon-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    /* Jadval ustunlari tekislanishi */
+    .working-hours-card .table td {
+        vertical-align: middle;
+    }
+
+    /* Badge stili */
+    .badge.bg-light {
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+</style>
+{% endblock %}

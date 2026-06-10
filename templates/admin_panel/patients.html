@@ -1,0 +1,162 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<style>
+    /* Orqa fon xiralashishi uchun */
+    .modal-backdrop.show { opacity: 0.7; backdrop-filter: blur(5px); }
+    .table-card { border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+</style>
+
+{% if messages %}
+  <div class="row">
+    <div class="col-12">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark">Bemorlar bazasi</h3>
+        <button class="btn btn-primary px-4 py-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+            <i class="fas fa-user-plus me-2"></i> Bemor qo'shish
+        </button>
+    </div>
+
+    <div class="card p-3 mb-4 border-0 shadow-sm">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Bemor ismi yoki telefon raqami...">
+        </div>
+    </div>
+    <div class="row g-3 mb-4">
+    <div class="col-md-8">
+        <input type="text" id="searchInput" class="form-control" placeholder="Qidirish...">
+    </div>
+    <div class="col-md-4">
+        <select id="sortSelect" class="form-select">
+            <option value="-created_at">Yangi qo'shilganlar</option>
+            <option value="full_name">Alfavit (A-Z)</option>
+            <option value="-full_name">Alfavit (Z-A)</option>
+            <option value="gender">Jinsi bo'yicha</option>
+        </select>
+    </div>
+</div>
+
+    <div class="card table-card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>F.I.Sh</th>
+                        <th>Telefon</th>
+                        <th>Jinsi</th>
+                        <th class="text-end pe-4">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                    {% include 'admin_panel/partials/patient_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPatientModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">Yangi bemor ro'yxatga olish</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'patient_create_dashboard' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary px-4">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                <h5 class="fw-bold mb-2">O'chirishni tasdiqlaysizmi?</h5>
+                <p class="text-muted small">Haqiqatdan ham <span id="del_p_name" class="fw-bold text-dark"></span> ismli bemorni bazadan o'chirmoqchimisiz?</p>
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Yo'q</button>
+                    <form id="deleteActionForm" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4">Ha</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPatientModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div id="editModalContent">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tahrirlash modalini ochish
+    function openEditModal(id) {
+        fetch(`/dashboard/patients/${id}/edit/`, {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('editModalContent').innerHTML = html;
+            new bootstrap.Modal(document.getElementById('editPatientModal')).show();
+        });
+    }
+
+    // Saralashni ishlatish
+    document.getElementById('sortSelect').addEventListener('change', function() {
+        const q = document.getElementById('searchInput').value;
+        const sort = this.value;
+        fetch(`?q=${q}&sort=${sort}`, { headers: {'X-Requested-With': 'XMLHttpRequest'} })
+        .then(res => res.text())
+        .then(html => { document.getElementById('patientTableBody').innerHTML = html; });
+    });
+</script>
+
+<script>
+    // Real-time qidiruv
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        fetch(`{% url 'patients_list_dashboard' %}?q=${this.value}`, {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(res => res.text())
+        .then(html => { document.getElementById('patientTableBody').innerHTML = html; });
+    });
+
+    // O'chirish oynasini chaqirish
+    function openDeleteModal(id, name) {
+        document.getElementById('del_p_name').innerText = name;
+        document.getElementById('deleteActionForm').action = `/dashboard/patients/${id}/delete/`;
+        var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        myModal.show();
+    }
+</script>
+{% endblock %}

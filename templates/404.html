@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}404 - Sahifa topilmadi | BOBUR DOKTOR SHIFO{% endblock %}
+
+{% block content %}
+<main class="main">
+
+  <div class="page-title" data-aos="fade">
+    <div class="heading">
+      <div class="container">
+        <div class="row d-flex justify-content-center text-center">
+          <div class="col-lg-8">
+            <h1 class="heading-title" style="color: #2c3155;">Xatolik 404</h1>
+            <p class="mb-0">Kechirasiz, siz qidirayotgan sahifa tizimda mavjud emas yoki o'chirilgan bo'lishi mumkin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs">
+      <div class="container">
+        <ol>
+          <li><a href="{% url 'index' %}">Asosiy sahifa</a></li>
+          <li class="current">404 xatolik</li>
+        </ol>
+      </div>
+    </nav>
+  </div><section id="error-404" class="error-404 section py-5">
+    <div class="container" data-aos="fade-up">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+
+          <div class="error-visual mb-4">
+             <i class="bi bi-exclamation-triangle" style="font-size: 80px; color: #00a0e3;"></i>
+             <h2 style="font-size: 120px; font-weight: 900; color: #2c3155; margin: 0; line-height: 1;">404</h2>
+          </div>
+
+          <h3 class="mb-4" style="color: #2c3155; font-weight: 700;">Sahifa topilmadi!</h3>
+
+          <p class="mb-5 text-muted">
+            Xavotir olmang, bizning shifokorlarimiz barcha ma'lumotlarni nazorat ostida ushlab turishibdi.
+            Ehtimol, havola noto'g'ri kiritilgan yoki sahifa manzili o'zgargan.
+          </p>
+
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'index' %}" class="btn px-4 py-2" style="background-color: #00a0e3; color: white; border-radius: 50px; font-weight: 600;">
+              <i class="bi bi-house-door me-2"></i> Bosh sahifaga qaytish
+            </a>
+            <a href="{% url 'contact' %}" class="btn px-4 py-2" style="border: 2px solid #00a0e3; color: #00a0e3; border-radius: 50px; font-weight: 600;">
+              <i class="bi bi-chat-dots me-2"></i> Bog'lanish
+            </a>
+          </div>
+
+          <div class="mt-5 p-4 border rounded-4 bg-light">
+             <h5 style="color: #2c3155; font-weight: 600;">Sizga bular yordam berishi mumkin:</h5>
+             <div class="row mt-3">
+                <div class="col-md-4 mb-2"><a href="{% url 'departments_page' %}" class="text-decoration-none text-info"><i class="bi bi-hospital me-1"></i> Bo'limlar</a></div>
+                <div class="col-md-4 mb-2"><a href="/services/" class="text-decoration-none text-info"><i class="bi bi-heart-pulse me-1"></i> Xizmatlar</a></div>
+                <div class="col-md-4 mb-2"><a href="/doctors/" class="text-decoration-none text-info"><i class="bi bi-people me-1"></i> Shifokorlar</a></div>
+             </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

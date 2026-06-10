@@ -1,0 +1,235 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary"><i class="fas fa-globe me-2"></i> Online Navbatlar</h3>
+
+        <div class="d-flex gap-2">
+            <input type="text" id="realTimeSearch" class="form-control" placeholder="Ism bo'yicha qidirish..." value="{{ search_query }}">
+
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    <i class="fas fa-calendar-alt"></i>
+    {% if current_year %}{{ current_year }}-yil{% else %}Sana bo'yicha{% endif %}
+</button>
+<ul class="dropdown-menu shadow">
+    <li><a class="dropdown-item" href="?">Barchasi</a></li>
+    {% for y in years %}
+        <li>
+            <a class="dropdown-item fw-bold" href="?year={{ y|date:'Y' }}">
+                {{ y|date:'Y' }}-yil
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="appointmentsTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Sana/Vaqt</th>
+                        <th>Bemor</th>
+                        <th>Shifokor</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in appointments %}
+                    <tr class="appointment-row">
+                        <td class="ps-4">
+                            <span class="d-block fw-bold">{{ app.date|date:"d.m.Y" }}</span>
+                            <small class="text-muted">{{ app.time_slot|time:"H:i" }}</small>
+                        </td>
+                        <td class="patient-name-cell">
+                            <div class="fw-bold">{{ app.patient_name }}</div>
+                            <small class="text-muted">{{ app.patient_phone }}</small>
+                        </td>
+                        <td>{{ app.doctor.full_name }}</td>
+                        <td>
+                            {% if app.is_confirmed %}
+                                <span class="badge bg-success text-white py-2 px-3" style="cursor: default;">
+                                    <i class="fas fa-check-circle me-1"></i> Tasdiqlangan
+                                </span>
+                            {% else %}
+                                <a href="{% url 'dashboard_confirm_online_appointment' app.pk %}"
+                                   class="badge bg-warning text-dark py-2 px-3 text-decoration-none status-btn"
+                                   title="Tasdiqlash uchun bosing">
+                                    <i class="fas fa-clock me-1"></i> Kutilmoqda
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                           <button onclick="viewAppointment({{ app.pk }})" class="btn btn-sm btn-outline-info me-1">
+                               <i class="fas fa-eye"></i>
+                            </button>
+<!--                            <button onclick="openEditOnlineModal({{ app.pk }})" class="btn btn-sm btn-outline-primary me-1">-->
+<!--                                <i class="fas fa-edit"></i>-->
+<!--                            </button>-->
+                            <button onclick="confirmDelete('{{ app.pk }}', '{{ app.patient_name }}')" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center py-4 text-muted">Ma'lumot topilmadi</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-bell me-2"></i> Yangi online navbat kelib tushdi!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 1. KO'RISH (View) FUNKSIYASI
+function viewAppointment(id) {
+    fetch(`/dashboard/online-appointments/${id}/view/`)
+        .then(res => res.json())
+        .then(data => {
+            Swal.fire({
+                title: 'Bemor ma\'lumotlari',
+                html: `
+                    <div class="text-start">
+                        <p><strong>F.I.Sh:</strong> ${data.name}</p>
+                        <p><strong>Telefon:</strong> ${data.phone}</p>
+                        <p><strong>Bo'lim:</strong> ${data.department}</p>
+                        <p><strong>Shifokor:</strong> ${data.doctor}</p>
+                        <p><strong>Sana:</strong> ${data.date}</p>
+                        <p><strong>Vaqt:</strong> ${data.time}</p>
+                        <p><strong>Izoh:</strong> ${data.notes || 'Yo\'q'}</p>
+                    </div>`,
+                confirmButtonText: 'Yopish',
+                confirmButtonColor: '#3085d6'
+            });
+        })
+        .catch(err => console.error("Xatolik:", err));
+}
+
+// 2. O'CHIRISH (Delete) FUNKSIYASI
+function confirmDelete(id, name) {
+    Swal.fire({
+        title: 'Ishonchingiz komilmi?',
+        text: `${name} ismli bemorni o'chirmoqchisiz!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ha, o‘chirilsin!',
+        cancelButtonText: 'Bekor qilish'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // URL manziling urls.py dagi bilan mos kelishini tekshir
+            window.location.href = `/dashboard/online-appointments/${id}/delete/`;
+        }
+    });
+}
+
+// 3. REAL-VAQTDA QIDIRUV
+document.getElementById('realTimeSearch').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('.appointment-row');
+
+    rows.forEach(row => {
+        let name = row.querySelector('.patient-name-cell .fw-bold').innerText.toLowerCase();
+        row.style.display = name.includes(filter) ? "" : "none";
+    });
+});
+
+// 4. STATUSNI TASDIQLASH (Alert bilan)
+document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        let url = this.href;
+        Swal.fire({
+            title: 'Tasdiqlaysizmi?',
+            text: "Ushbu navbatni tasdiqlangan holatiga o'tkazmoqchisiz.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ha, tasdiqlansin',
+            cancelButtonText: 'Bekor qilish',
+            confirmButtonColor: '#28a745'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    });
+});
+
+// Oxirgi ma'lum bo'lgan navbatlar sonini saqlash uchun o'zgaruvchi
+let lastUnreadCount = null;
+
+function checkAppointmentsRealTime() {
+    fetch('/dashboard/check-appointments/', { // Yuqoridagi URL
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const currentCount = data.unread_count;
+
+        // Agar avvalgi sondan ko'p bo'lsa, demak yangi navbat qo'shilgan
+        if (lastUnreadCount !== null && currentCount > lastUnreadCount) {
+            // 1. Toast bildirishnomasini ko'rsatish
+            const toastElement = document.getElementById('liveToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            // 2. Ovozli xabar (ixtiyoriy)
+            // let audio = new Audio('https://www.soundjay.com/buttons/beep-07a.mp3');
+            // audio.play();
+
+            // 3. Jadvalni yangilash (agar qidiruv bo'sh bo'lsa)
+            if (document.getElementById('realTimeSearch').value === "") {
+                refreshTable();
+            }
+        }
+        lastUnreadCount = currentCount;
+    })
+    .catch(err => console.error("Xatolik:", err));
+}
+
+// Jadvalni yangilash funksiyasi (Butun sahifani refresh qilmasdan)
+function refreshTable() {
+    fetch(window.location.href, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newTable = doc.querySelector('#appointmentsTable tbody').innerHTML;
+        document.querySelector('#appointmentsTable tbody').innerHTML = newTable;
+    });
+}
+
+// Har 10 soniyada ishga tushirish
+setInterval(() => {
+    if (!document.hidden) {
+        checkAppointmentsRealTime();
+    }
+}, 10000);
+
+// Sahifa yuklanganda birinchi marta sonini olib qo'yamiz
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/dashboard/check-appointments/')
+        .then(res => res.json())
+        .then(data => { lastUnreadCount = data.unread_count; });
+});
+</script>
+{% endblock %}

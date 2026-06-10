@@ -1,0 +1,159 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block title %}{{ department.name }} | Batafsil{% endblock %}
+
+{% block content %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 15px;
+        border: 1px solid #e0e6ed;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        overflow: hidden; /* Rasmni burchaklarini kesish uchun */
+        margin-bottom: 25px;
+    }
+    .dept-banner-img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-bottom: 1px solid #e0e6ed;
+    }
+    .no-img-banner {
+        width: 100%;
+        height: 220px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e1;
+    }
+    .card-body-padding {
+        padding: 25px;
+    }
+    .info-label {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+    }
+    .description-box {
+        background: #fdfdfd;
+        border: 1px dashed #e2e8f0;
+        padding: 15px;
+        border-radius: 10px;
+        color: #475569;
+        line-height: 1.6;
+    }
+    .service-item {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border: 1px solid #f1f5f9;
+        border-left: 5px solid #3182ce;
+        transition: all 0.2s ease;
+    }
+    .service-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+    .price-tag {
+        background: #eef2ff;
+        color: #4338ca;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'departments_list' %}" class="text-decoration-none">Bo'limlar</a></li>
+                    <li class="breadcrumb-item active">#{{ department.id }} Tafsilot</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold text-dark m-0">{{ department.name }}</h3>
+        </div>
+        <div>
+            <a href="{% url 'departments_list' %}" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left me-1"></i> Orqaga
+            </a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="detail-card">
+                {% if department.image %}
+                    <img src="{{ department.image.url }}" class="dept-banner-img" alt="{{ department.name }}">
+                {% else %}
+                    <div class="no-img-banner">
+                        <i class="fas fa-image fa-4x"></i>
+                    </div>
+                {% endif %}
+
+                <div class="card-body-padding text-center">
+                    <span class="badge bg-primary mb-3">ID: #{{ department.id }}</span>
+                    <h5 class="fw-bold text-dark mb-4">{{ department.name }}</h5>
+
+                    <div class="row text-start g-3">
+                        <div class="col-12">
+                            <p class="info-label">Yaratilgan vaqti</p>
+                            <p class="mb-0 text-dark small"><i class="far fa-clock me-2 text-primary"></i>{{ department.created_at|date:"d F, Y | H:i" }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="info-label">Status</p>
+                            <p class="mb-0 text-success small"><i class="fas fa-check-circle me-2"></i> Faol bo'lim</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="detail-card card-body-padding">
+                <h6 class="fw-bold text-dark mb-3"><i class="fas fa-align-left me-2 text-primary"></i>Bo'lim haqida tavsif</h6>
+                <div class="description-box">
+                    {% if department.description %}
+                        {{ department.description|linebreaks }}
+                    {% else %}
+                        <span class="text-muted italic">Ushbu bo'lim uchun hali tavsif yozilmagan.</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="detail-card card-body-padding">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-list me-2 text-primary"></i>Bo'lim xizmatlari</h6>
+                    <span class="badge rounded-pill bg-light text-dark border">{{ department.services.count }} ta</span>
+                </div>
+
+                <div class="row">
+                    {% for service in department.services.all %}
+                    <div class="col-md-6">
+                        <div class="service-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 fw-bold text-dark">{{ service.name }}</p>
+                                <span class="price-tag">{{ service.price }} so'm</span>
+                            </div>
+                            <button class="btn btn-link text-muted p-0"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted small">Xizmatlar topilmadi.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

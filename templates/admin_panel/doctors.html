@@ -1,0 +1,77 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Shifokorlar boshqaruvi | BDS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark m-0">Klinika Shifokorlari</h3>
+    </div>
+
+    <div class="card p-3 border-0 shadow-sm rounded-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label class="form-label small fw-bold text-muted">Ism, mutaxassislik yoki bo'lim nomi</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Qidirish...">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">Saralash</label>
+                <select id="sortSelect" class="form-select">
+                    <option value="full_name">Ism (A-Z)</option>
+                    <option value="-full_name">Ism (Z-A)</option>
+                    <option value="-doctor_details__experience_years">Staj (ko'pdan kamga)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Rasm</th>
+                        <th>F.I.Sh</th>
+                        <th>Mutaxassislik</th>
+                        <th>Bo'lim</th>
+                        <th>Telefon</th>
+                        <th class="text-end pe-4">Ko'rish</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorTableBody">
+                    {% include 'admin_panel/partials/doctor_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const tableBody = document.getElementById('doctorTableBody');
+
+    function updateTable() {
+        const q = searchInput.value;
+        const sort = sortSelect.value;
+        
+        // Dinamik dashboard URL
+        const baseUrl = "{% url 'doctors_list_dashboard' %}";
+        
+        fetch(`${baseUrl}?q=${encodeURIComponent(q)}&sort=${sort}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            tableBody.innerHTML = html;
+        });
+    }
+
+    searchInput.addEventListener('input', updateTable);
+    sortSelect.addEventListener('change', updateTable);
+</script>
+{% endblock %}

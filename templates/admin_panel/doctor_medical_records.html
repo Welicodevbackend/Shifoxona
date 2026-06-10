@@ -1,0 +1,67 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block title %}Tibbiy Kartalar | BDS Doctor{% endblock %}
+
+{% block content %}
+<style>
+    .record-card { background: white; border-radius: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .table thead th { background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 15px; border-bottom: 2px solid #f1f5f9; }
+    .search-box { border-radius: 10px; border: 1px solid #e2e8f0; padding: 10px 15px; }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark m-0">Tibbiy Kartalar</h3>
+            <p class="text-muted small">Bemorlarning davolanish tarixi va tashxislari</p>
+        </div>
+        <a href="{% url 'doctor_medical_record_create' %}" class="btn btn-primary shadow-sm px-4">
+            <i class="fas fa-plus-circle me-2"></i> Yangi karta ochish
+        </a>
+    </div>
+
+    <div class="record-card p-4 mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group search-box">
+                    <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="recordSearch" class="form-control border-0 bg-transparent" 
+                           placeholder="Bemor ismi yoki tashxis bo'yicha qidirish..." value="{{ query }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="record-card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Bemor ismi</th>
+                        <th>Tashxis</th>
+                        <th>Sana</th>
+                        <th class="text-end pe-4">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="recordTableBody">
+                    {% include 'admin_panel/partials/doctor_medical_records_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('recordSearch').addEventListener('input', function() {
+        const q = this.value;
+        fetch(`?q=${q}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('recordTableBody').innerHTML = html;
+        });
+    });
+</script>
+{% endblock %}

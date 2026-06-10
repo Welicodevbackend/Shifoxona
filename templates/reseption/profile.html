@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil | {{ staff.full_name|default:user.username }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Manrope', sans-serif; color: #1a2a3a; }
+        .profile-container { max-width: 800px; margin: 50px auto; }
+        .profile-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: none; }
+        .profile-header { background: linear-gradient(135deg, #1a2a3a 0%, #00d4ff 100%); padding: 40px; text-align: center; color: white; }
+        .profile-avatar { width: 110px; height: 110px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 45px; border: 3px solid rgba(255,255,255,0.3); }
+        .info-table td { padding: 18px 25px; border-top: 1px solid #f0f2f5; vertical-align: middle; }
+        .info-label { font-weight: 600; color: #6c757d; width: 35%; }
+        .info-value { font-weight: 500; }
+        .edit-input { display: none; } /* Dastlab yashirin */
+        .btn-actions { padding: 25px; background: #fafbfc; border-top: 1px solid #f0f2f5; }
+        .btn-custom { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: 0.3s; }
+        .badge-role { background-color: #e3f2fd; color: #007bff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="container profile-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 border-0" style="border-radius: 15px;">
+                <i class="fas fa-check-circle mr-2"></i> {{ message }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+   <form method="post" id="profileForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar-container" style="position: relative; width: 120px; margin: 0 auto 15px;">
+                <div class="profile-avatar" style="overflow: hidden; border: 4px solid rgba(255,255,255,0.3); width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1);">
+                    {% if staff.photo %}
+                        <img src="{{ staff.photo.url }}" id="profilePreview" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-user-shield" id="avatarIcon"></i>
+                    {% endif %}
+                </div>
+
+                <label for="photoInput" class="edit-input" style="position: absolute; bottom: 0; right: 0; background: #28a745; color: white; width: 35px; height: 35px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; border: 3px solid #1a2a3a; z-index: 10;">
+                    <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" name="photo" id="photoInput" class="edit-input" style="display: none;" accept="image/*">
+            </div>
+            <h3 class="mb-1">{{ staff.full_name|default:user.get_full_name }}</h3>
+            <p class="mb-0 opacity-75">ID: #00{{ user.id }} | {{ staff.get_role_display|default:"Tizim xodimi" }}</p>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table info-table mb-0">
+                <tr>
+                    <td class="info-label"><i class="fas fa-id-badge mr-2"></i> Foydalanuvchi nomi</td>
+                    <td class="info-value text-muted">{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <td class="info-label"><i class="fas fa-briefcase mr-2"></i> Lavozimi</td>
+                    <td class="info-value"><span class="badge-role">{{ staff.get_role_display|default:"Reception" }}</span></td>
+                </tr>
+                <tr>
+                    <td class="info-label"><i class="fas fa-phone-alt mr-2"></i> Telefon raqami</td>
+                    <td class="info-value">
+                        <span class="view-text">{{ staff.phone|default:"Kiritilmagan" }}</span>
+                        <input type="text" name="phone" class="form-control form-control-sm edit-input" value="{{ staff.phone }}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="info-label"><i class="fas fa-envelope mr-2"></i> Email pochta</td>
+                    <td class="info-value">
+                        <span class="view-text">{{ user.email|default:"Kiritilmagan" }}</span>
+                        <input type="email" name="email" class="form-control form-control-sm edit-input" value="{{ user.email }}">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="btn-actions d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{% url 'reception_dash' %}" class="btn btn-custom btn-outline-secondary mr-2" id="backBtn">
+                    <i class="fas fa-arrow-left mr-1"></i> Dashboard
+                </a>
+                <button type="button" class="btn btn-custom btn-info" id="editBtn">
+                    <i class="fas fa-edit mr-1"></i> Tahrirlash
+                </button>
+                <button type="submit" class="btn btn-custom btn-success edit-input" id="saveBtn">
+                    <i class="fas fa-save mr-1"></i> Saqlash
+                </button>
+                <button type="button" class="btn btn-custom btn-light border edit-input ml-1" id="cancelBtn">
+                    Bekor qilish
+                </button>
+            </div>
+            <a href="{% url 'password_change' %}" class="btn btn-custom btn-link text-warning p-0">
+                <i class="fas fa-key mr-1"></i> Parolni yangilash
+            </a>
+        </div>
+    </div>
+</form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Tahrirlash rejimiga o'tish
+        $('#editBtn').click(function() {
+            $('.view-text, #editBtn, #backBtn').hide();
+            $('.edit-input, #saveBtn, #cancelBtn').fadeIn();
+        });
+
+        // Bekor qilish
+        $('#cancelBtn').click(function() {
+            $('.edit-input, #saveBtn, #cancelBtn').hide();
+            $('.view-text, #editBtn, #backBtn').fadeIn();
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Tahrirlash tugmasi bosilganda
+        $('#editBtn').click(function() {
+            $('.view-text, #editBtn, #backBtn').hide();
+            $('.edit-input, #saveBtn, #cancelBtn').fadeIn();
+            $('label[for="photoInput"]').css('display', 'flex'); // Kamera belgisini ko'rsatish
+        });
+
+        // Bekor qilish tugmasi
+        $('#cancelBtn').click(function() {
+            $('.edit-input, #saveBtn, #cancelBtn').hide();
+            $('.view-text, #editBtn, #backBtn').fadeIn();
+        });
+
+        // Rasm tanlanganda uni Preview qilish
+        $('#photoInput').change(function() {
+            const file = this.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    if ($('#profilePreview').length) {
+                        $('#profilePreview').attr('src', e.target.result);
+                    } else {
+                        // Agar oldin rasm bo'lmagan bo'lsa, ikonkani rasmga almashtiramiz
+                        $('.profile-avatar').html('<img src="' + e.target.result + '" id="profilePreview" style="width: 100%; height: 100%; object-fit: cover;">');
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% for app in appointments %}
+<tr>
+    <td class="ps-4">
+        <div class="fw-bold">{{ app.date|date:"d.m.Y" }}</div>
+        <small class="text-primary">{{ app.time_slot|time:"H:i" }}</small>
+    </td>
+    <td>
+        <div class="fw-bold">{{ app.patient_name }}</div>
+        <small class="text-muted">{{ app.patient_phone }}</small>
+    </td>
+    <td>{{ app.doctor.full_name }}</td>
+    <td>
+        {% if app.service %}<span class="badge bg-info text-dark">{{ app.service.name }}</span>
+        {% elif app.lab_test %}<span class="badge bg-secondary">{{ app.lab_test.name }}</span>
+        {% else %}<span class="badge bg-light text-dark">Konsultatsiya</span>{% endif %}
+    </td>
+    <td>
+        {% if app.status == 'waiting' %}
+            <span class="badge bg-warning">Kutilmoqda</span>
+        {% elif app.status == 'received' %}
+            <span class="badge bg-info">Qabul qilindi</span>
+        {% elif app.status == 'completed' %}
+            <span class="badge bg-success">Yakunlandi</span>
+        {% else %}
+            <span class="badge bg-light text-dark">{{ app.get_status_display }}</span>
+        {% endif %}
+    </td>
+    <td class="text-end pe-4">
+        <div class="btn-group gap-1">
+            {# STATUSNI O'ZGARTIRISH TUGMASI #}
+            {% if app.status == 'waiting' %}
+            <a href="{% url 'change_status' app.id 'received' %}" class="btn btn-sm btn-success" title="Qabul qilish">
+                <i class="fas fa-check"></i>
+            </a>
+            {% endif %}
+
+            {# KO'RISH TUGMASI #}
+            <a href="{% url 'appointment_detail' app.id %}" class="btn btn-sm btn-outline-primary" title="Ko'rish">
+                <i class="fas fa-eye"></i>
+            </a>
+
+            {# TAHRIRLASH TUGMASI #}
+            <button onclick="openEditModal('{{ app.id }}')" class="btn btn-sm btn-outline-warning" title="Tahrirlash">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+{% endfor %}

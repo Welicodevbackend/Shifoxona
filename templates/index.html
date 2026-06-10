@@ -1,0 +1,1824 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <main class="main">
+<!--    <section id="hero" class="hero section">-->
+<!--      <div class="container" data-aos="fade-up" data-aos-delay="100">-->
+<!--        <div class="row align-items-center">-->
+<!--          <div class="col-lg-6">-->
+<!--            <div class="hero-content">-->
+<!--              <div class="trust-badges mb-4">-->
+<!--                <div class="badge-item">-->
+<!--  <i class="bi bi-shield-check"></i>-->
+<!--  <span>Xalqaro sertifikatlangan</span>-->
+<!--</div>-->
+<!--<div class="badge-item">-->
+<!--  <i class="bi bi-clock"></i>-->
+<!--  <span>24/7 Tez yordam</span>-->
+<!--</div>-->
+<!--<div class="badge-item">-->
+<!--  <i class="bi bi-star-fill"></i>-->
+<!--  <span>4.9/5 Reyting</span>-->
+<!--</div>-->
+<!--              </div>-->
+<!--             <h1 style="font-size: 3.5rem; font-weight: 800; color: #2c3155;">-->
+<!--  Yuqori Sifatli <span style="color: #00a0e3;">Tibbiyot</span> Va Professional G'amxo'rlik-->
+<!--</h1>-->
+
+<!--<p class="hero-description">-->
+<!--  Bizning markazimizda eng zamonaviy texnologiyalar va tajribali mutaxassislar sizning sog'lig'ingiz uchun xizmat qiladi.-->
+<!--</p>-->
+
+<!--<div class="hero-actions">-->
+<!--  <a href="appointment.html" class="btn btn-primary px-4 py-2 rounded-pill">Qabulga yozilish</a>-->
+
+<!--  <a href="https://www.youtube.com/watch?v=CQY1w9OCodM" class="btn btn-outline glightbox">-->
+<!--    <i class="bi bi-play-circle me-2"></i> Biz haqimizda video-->
+<!--  </a>-->
+<!--</div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="col-lg-6">-->
+<!--            <div class="hero-visual" data-aos="fade-left">-->
+<!--              <div class="main-image">-->
+<!--                <img src="{% static 'assets/img/health/staff-10.webp' %}" alt="Doctor" class="img-fluid rounded-4 shadow">-->
+<!--                <div class="floating-card appointment-card">-->
+<!--                  <div class="card-icon" style="background: #eef7ff; color: #00a0e3; padding: 10px; border-radius: 10px;"><i class="bi bi-calendar-check fs-4"></i></div>-->
+<!--                  <div class="card-content">-->
+<!--                    <h6 class="mb-0 fw-bold">Navbatdagi qabul</h6>-->
+<!--<p class="mb-0 text-primary small">Bugun soat 14:30</p>-->
+<!--<small class="text-muted">Doktor Sarah Johnson</small>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="floating-card rating-card">-->
+<!--                  <div class="rating-stars mb-1" style="color: #ffc107;"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>-->
+<!--                  <h6 class="mb-0 fw-bold">4.9/5</h6>-->
+<!--                  <small class="text-muted">1,234 Ko`rishlar</small>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </section>-->
+<script>
+document.querySelector('.search-form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Sahifa yangilanishini to'xtatish
+
+    let url = this.getAttribute('action') || '.';
+    let params = new URLSearchParams(new FormData(this)).toString();
+
+    fetch(`${url}?${params}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // 'doctor-results-container' - bu shifokorlar kartochkalari o'ralgan div ID'si bo'lishi kerak
+        document.getElementById('doctor-results-container').innerHTML = html;
+    });
+});
+
+
+// AI Modal logic
+document.addEventListener('DOMContentLoaded', function() {
+    const askBtn = document.getElementById('btnModalAskAI');
+    if (askBtn) {
+        askBtn.addEventListener('click', function() {
+            const complaintInput = document.getElementById('modalAiInput');
+            const complaint = complaintInput ? complaintInput.value : '';
+            const btn = this;
+
+            if (complaint.length < 5) {
+                alert("Iltimos, batafsilroq yozing");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Tahlil qilinmoqda...';
+
+            fetch(`/ai-triage/?complaint=${encodeURIComponent(complaint)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.dept_id) {
+                        document.getElementById('suggestedDeptName').innerText = data.dept_name;
+                        document.getElementById('aiChatInitial').classList.add('d-none');
+                        document.getElementById('aiResultArea').classList.remove('d-none');
+
+                        document.getElementById('btnGoToBooking').onclick = function() {
+                            const modalElement = document.getElementById('aiTriageModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if (modalInstance) modalInstance.hide();
+
+                            const specialtySelect = document.querySelector('select[name="specialty"]');
+                            if (specialtySelect) {
+                                specialtySelect.value = data.dept_id;
+                                document.getElementById('find-a-doctor').scrollIntoView({ behavior: 'smooth' });
+                            }
+                        };
+                    } else if (data.not_found) {
+                        alert("Kechirasiz, mos bo'lim topilmadi.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Xato:", err);
+                    alert("Server bilan bog'lanishda xato yuz berdi.");
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Tahlil qilish';
+                });
+        });
+    }
+});
+
+
+</script>
+   <section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content">
+          <div class="trust-badges mb-4">
+            <div class="badge-item">
+              <i class="bi bi-shield-check"></i>
+              <span>Xalqaro sertifikatlangan</span>
+            </div>
+            <div class="badge-item">
+              <i class="bi bi-clock"></i>
+              <span>24/7 Tez yordam</span>
+            </div>
+            <div class="badge-item">
+              <i class="bi bi-star-fill"></i>
+              <span>4.9/5 Reyting</span>
+            </div>
+          </div>
+          <h1 style="font-size: 3.5rem; font-weight: 800; color: #2c3155;">
+            Yuqori Sifatli <span style="color: #00a0e3;">Tibbiyot</span> Va Professional G'amxo'rlik
+          </h1>
+          <p class="hero-description">
+            Bizning markazimizda eng zamonaviy texnologiyalar va tajribali mutaxassislar sizning sog'lig'ingiz uchun xizmat qiladi.
+          </p>
+          <div class="hero-actions">
+            <a href="{% url 'doctors_list' %}" class="btn btn-primary px-4 py-2 rounded-pill">
+    Qabulga yozilish
+</a><a href="https://www.youtube.com/watch?v=CQY1w9OCodM" class="btn btn-outline glightbox">
+              <i class="bi bi-play-circle me-2"></i> Biz haqimizda video
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="hero-visual" data-aos="fade-left">
+          <div class="main-image" style="position: relative; display: flex; align-items: center; justify-content: center;">
+            <img src="{% if next_app and next_app.doctor.photo %}{{ next_app.doctor.photo.url }}{% else %}{% static 'assets/img/health/staff-10.webp' %}{% endif %}"
+                 alt="Doctor"
+                 class="img-fluid rounded-4 shadow"
+                 style="object-fit: contain !important; object-position: center !important; padding: 40px !important; background: #fff; width: 100%; height: 100%;">
+
+            {% if next_app %}
+            <div class="floating-card appointment-card"
+                 style="position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 10;
+                        background: rgba(255, 255, 255, 0.85);
+                        backdrop-filter: blur(8px);
+                        border-radius: 16px;
+                        padding: 15px 20px;
+                        box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+                        border: 1px solid rgba(255,255,255,0.4);
+                        min-width: 240px;">
+
+              <div class="d-flex align-items-center gap-3">
+                <div class="card-icon" style="background: #eef7ff; color: #00a0e3; padding: 12px; border-radius: 12px;">
+                  <i class="bi bi-calendar-check fs-4"></i>
+                </div>
+                <div class="card-content">
+                  <h6 class="mb-0 fw-bold" style="color: #2c3155;">Navbatdagi qabul</h6>
+                  <p class="mb-0 text-primary small fw-bold">
+                    {% if next_app.date == today %}
+                      Bugun soat {{ next_app.time_slot|time:"H:i" }}
+                    {% else %}
+                      {{ next_app.date|date:"d-M" }} soat {{ next_app.time_slot|time:"H:i" }}
+                    {% endif %}
+                  </p>
+                  <small class="text-muted">Dr. {{ next_app.doctor.full_name }}</small>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="floating-card rating-card">
+              <div class="rating-stars mb-1" style="color: #ffc107;">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <h6 class="mb-0 fw-bold">4.9/5</h6>
+              <small class="text-muted">1,234 Ko`rishlar</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    <section id="home-about" class="home-about section">
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="200">
+        <div class="about-content">
+          <h2 class="section-heading">Samimiy G'amxo'rlik, Zamonaviy Tibbiyot</h2>
+          <p class="lead-text">Chorak asrdan ko'proq vaqt davomida biz eng so'nggi tibbiy texnologiyalarni bemorlarimiz munosib bo'lgan shaxsiy e'tibor bilan birlashtirib, yuqori sifatli sog'liqni saqlash xizmatlarini taqdim etib kelmoqdamiz.</p>
+
+          <p>Bizning ko'p tarmoqli mutaxassislar jamoamiz har bir bemorning o'ziga xos ehtiyojlariga moslashtirilgan har tomonlama yordam olishini ta'minlash uchun hamkorlikda ishlaydi. Profilaktik xizmatlardan tortib murakkab muolajalargacha, biz ishonch va shifo muhitini yaratgan holda tibbiy mukammallikning eng yuqori standartlarini saqlaymiz.</p>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="15000"
+                data-purecounter-duration="1"></div>
+              <div class="stat-label">Bemorlarimiz</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="25"
+                data-purecounter-duration="1"></div>
+              <div class="stat-label">Yillik tajriba</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="50"
+                data-purecounter-duration="1"></div>
+              <div class="stat-label">Mutaxassislar</div>
+            </div>
+          </div>
+
+          <div class="cta-section">
+            <a href="{% url 'markaz_haqida' %}" class="btn-primary">Biz haqimizda batafsil</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+        <div class="about-visual">
+          <div class="main-image">
+            <img src="{% static 'assets/img/health/facilities-9.webp' %}" alt="Zamonaviy tibbiy bino" class="img-fluid">
+          </div>
+          <div class="floating-card">
+            <div class="card-content">
+              <div class="icon">
+                <i class="bi bi-heart-pulse"></i>
+              </div>
+              <div class="card-text">
+                <h4>24/7 Tez yordam</h4>
+                <p>Sizga kerak bo'lgan vaqtda doim shu yerdamiz</p>
+              </div>
+            </div>
+          </div>
+          <div class="experience-badge">
+            <div class="badge-content">
+              <span class="years">25+</span>
+              <span class="text">Yillik ishonchli xizmat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+   <section id="featured-departments" class="featured-departments section">
+
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Asosiy Bo'limlar</h2>
+    <p>Bizning markazimizda yuqori malakali mutaxassislar va zamonaviy texnologiyalar jamlangan</p>
+  </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="row g-5">
+
+      <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="100">
+        <div class="specialty-card">
+          <div class="specialty-content">
+            <div class="specialty-meta">
+              <span class="specialty-label">Ixtisoslashgan yordam</span>
+            </div>
+            <h3>Kardiologiya</h3>
+            <p>Yurak salomatligini har tomonlama boshqarish uchun ilg'or diagnostika va shaxsiy davolash protokollari.</p>
+            <div class="specialty-features">
+              <span><i class="bi bi-check-circle-fill"></i>24/7 Shoshilinch kardiologik yordam</span>
+              <span><i class="bi bi-check-circle-fill"></i>Kam invaziv muolajalar</span>
+            </div>
+           <a href="{% url 'departments_page' %}" class="specialty-link">
+  Batafsil ma'lumot <i class="bi bi-arrow-right"></i>
+</a>
+          </div>
+          <div class="specialty-visual">
+            <img src="{% static 'assets/img/health/cardiology-1.webp' %}" alt="Kardiologiya" class="img-fluid">
+            <div class="visual-overlay">
+              <i class="bi bi-heart-pulse"></i>
+            </div>
+          </div>
+        </div>
+      </div><div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
+        <div class="specialty-card">
+          <div class="specialty-content">
+            <div class="specialty-meta">
+              <span class="specialty-label">Ekspert nazorati</span>
+            </div>
+            <h3>Nevrologiya</h3>
+            <p>Miya va orqa miya kasalliklarini davolashda innovatsion yondashuvlar va yuqori aniqlikdagi neyroxirurgiya.</p>
+            <div class="specialty-features">
+              <span><i class="bi bi-check-circle-fill"></i>Ilg'or neyro-vizualizatsiya</span>
+              <span><i class="bi bi-check-circle-fill"></i>Robotlashtirilgan jarrohlik</span>
+            </div>
+           <a href="{% url 'departments_page' %}" class="specialty-link">
+  Batafsil ma'lumot <i class="bi bi-arrow-right"></i>
+</a>
+          </div>
+          <div class="specialty-visual">
+            <img src=" {% static 'assets/img/health/neurology-4.webp' %}" alt="Nevrologiya" class="img-fluid">
+            <div class="visual-overlay">
+              <i class="bi bi-cpu"></i>
+            </div>
+          </div>
+        </div>
+      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="department-highlight">
+          <div class="highlight-icon">
+            <i class="bi bi-shield-plus"></i>
+          </div>
+          <h4>Ortopediya</h4>
+          <p>Tayanch-harakat tizimini davolash, bo'g'imlarni almashtirish va artroskopik texnikalar.</p>
+          <ul class="highlight-list">
+            <li>Sport tibbiyoti</li>
+            <li>Bo'g'imlarni endoprotezlash</li>
+            <li>Umurtqa jarrohligi</li>
+          </ul>
+          <a href="{% url 'services_list' %}" class="highlight-cta">Batafsil</a>
+        </div>
+      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="department-highlight">
+          <div class="highlight-icon">
+            <i class="bi bi-people"></i>
+          </div>
+          <h4>Pediatriya</h4>
+          <p>Yangi tug'ilgan chaqaloqlardan to o'smirlik davrigacha bo'lgan bolalar uchun oilaviy g'amxo'rlik.</p>
+          <ul class="highlight-list">
+            <li>Neonatal intensiv terapiya</li>
+            <li>Rivojlanish pediatriyasi</li>
+            <li>Bolalar jarrohligi</li>
+          </ul>
+        <a href="{% url 'services_list' %}" class="highlight-cta">Batafsil</a>
+        </div>
+      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="department-highlight">
+          <div class="highlight-icon">
+            <i class="bi bi-activity"></i>
+          </div>
+          <h4>Onkologiya</h4>
+          <p>Eng so'nggi terapevtik innovatsiyalar yordamida saraton kasalligiga qarshi kurash dasturlari.</p>
+          <ul class="highlight-list">
+            <li>Aniq tibbiyot</li>
+            <li>Immunoterapiya</li>
+            <li>Radiatsion onkologiya</li>
+          </ul>
+          <a href="{% url 'services_list' %}" class="highlight-cta">Batafsil</a>
+        </div>
+      </div></div>
+
+    <div class="emergency-banner" data-aos="fade-up" data-aos-delay="400">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <div class="emergency-content">
+            <h3>24/7 Tez tibbiy yordam xizmati</h3>
+            <p>Bizning shoshilinch yordam bo'limimiz eng zamonaviy uskunalar va tajribali shifokorlar bilan ta'minlangan.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <a href="tel:+998991004215" class="emergency-btn">
+            <i class="bi bi-telephone-fill"></i>
+            Tez yordam: +998 99 100-42-15
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+   <section id="featured-services" class="featured-services section">
+
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Asosiy Xizmatlar</h2>
+    <p>Bizning markazimizda barcha turdagi yuqori sifatli tibbiy xizmatlar ko'rsatiladi</p>
+  </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="row g-0">
+
+      <div class="col-lg-8" data-aos="fade-right" data-aos-delay="200">
+        <div class="featured-service-main">
+          <div class="service-image-wrapper">
+            <img src="{% static 'assets/img/health/consultation-4.webp' %}" alt="Professional tibbiy xizmatlar" class="img-fluid"
+              loading="lazy">
+            <div class="service-overlay">
+              <div class="service-badge">
+                <i class="bi bi-heart-pulse"></i>
+                <span>Tez yordam</span>
+              </div>
+            </div>
+          </div>
+          <div class="service-details">
+            <h2>Keng Ko'lamli Tibbiy Mukammallik</h2>
+            <p>Bizning klinikamizda har bir bemorga individual yondashuv asosida eng zamonaviy tashxis qo'yish va davolash usullari qo'llaniladi. Sizning salomatligingiz — bizning oliy maqsadimizdir.</p>
+            <a href="{% url 'services_list' %}" class="main-cta">Barcha xizmatlarni ko'rish</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4" data-aos="fade-left" data-aos-delay="300">
+        <div class="services-sidebar">
+
+          <div class="service-item" data-aos="fade-up" data-aos-delay="400">
+            <div class="service-icon-wrapper">
+              <i class="bi bi-capsule"></i>
+            </div>
+            <div class="service-info">
+              <h4>Dermatologiya klinikasi</h4>
+              <p>Teri kasalliklarini tashxislash va samarali davolash bo'yicha yuqori malakali mutaxassislar xizmati.</p>
+              <a href="{% url 'services_list' %}" class="service-link">Batafsil</a>
+            </div>
+          </div>
+
+          <div class="service-item" data-aos="fade-up" data-aos-delay="500">
+            <div class="service-icon-wrapper">
+              <i class="bi bi-bandaid"></i>
+            </div>
+            <div class="service-info">
+              <h4>Jarrohlik markazi</h4>
+              <p>Zamonaviy operatsiya xonalari va eng kam invaziv (kichik kesimli) jarrohlik amaliyotlari.</p>
+              <a href="{% url 'services_list' %}" class="service-link">Batafsil</a>
+            </div>
+          </div>
+
+          <div class="service-item" data-aos="fade-up" data-aos-delay="600">
+            <div class="service-icon-wrapper">
+              <i class="bi bi-activity"></i>
+            </div>
+            <div class="service-info">
+              <h4>Diagnostika laboratoriyasi</h4>
+              <p>Aniq va tezkor natijalarni ta'minlovchi eng so'nggi rusumdagi laboratoriya tahlillari.</p>
+              <a href="{% url 'services_list' %}" class="service-link">Batafsil</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="specialties-grid" data-aos="fade-up" data-aos-delay="300">
+      <div class="row align-items-center">
+
+        <div class="col-lg-3 col-md-6">
+          <div class="specialty-card">
+            <div class="specialty-image">
+              <img src="{% static 'assets/img/health/maternal-2.webp' %}" alt="Onalar salomatligi" class="img-fluid" loading="lazy">
+            </div>
+            <div class="specialty-content">
+              <h5>Onalik g'amxo'rligi</h5>
+              <span>Homiladorlik va tug'ruqni professional qo'llab-quvvatlash</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="specialty-card">
+            <div class="specialty-image">
+              <img src="{% static 'assets/img/health/vaccination-3.webp' %}" alt="Vaksina xizmati" class="img-fluid" loading="lazy">
+            </div>
+            <div class="specialty-content">
+              <h5>Vaksinalash</h5>
+              <span>To'liq va xavfsiz emlash dasturlari</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="specialty-card">
+            <div class="specialty-image">
+              <img src="{% static 'assets/img/health/emergency-1.webp' %}" alt="Tez yordam" class="img-fluid" loading="lazy">
+            </div>
+            <div class="specialty-content">
+              <h5>Shoshilinch yordam</h5>
+              <span>24/7 rejimida ishlovchi kritik yordam xizmati</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="specialty-card">
+            <div class="specialty-image">
+              <img src="{% static 'assets/img/health/facilities-6.webp' %}" alt="Ilg'or texnologiya" class="img-fluid" loading="lazy">
+            </div>
+            <div class="specialty-content">
+              <h5>Ilg'or texnologiyalar</h5>
+              <span>Eng so'nggi rusumdagi tibbiy uskunalar jamlanmasi</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<section id="ai-consultant" class="section py-5">-->
+<!--  <div class="container" data-aos="fade-up">-->
+<!--    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #00a0e3 0%, #007bb1 100%); border-radius: 20px;">-->
+<!--      <div class="card-body p-4 p-lg-5 text-white">-->
+<!--        <div class="row align-items-center text-center text-lg-start">-->
+<!--          <div class="col-lg-8">-->
+<!--            <div class="d-flex flex-column flex-lg-row align-items-center gap-4">-->
+<!--              <div class="ai-icon-pulse bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="min-width: 80px; height: 80px;">-->
+<!--                <i class="bi bi-robot fs-1"></i>-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                <h3 class="fw-bold mb-2">Qaysi shifokorga murojaat qilishni bilmayapsizmi?</h3>-->
+<!--                <p class="mb-0 opacity-90 fs-5">Shikoyatingizni yozing, sun'iy intellektimiz sizga mos mutaxassisni topib beradi.</p>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">-->
+<!--            <button class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow" data-bs-toggle="modal" data-bs-target="#aiTriageModal">-->
+<!--              <i class="bi bi-stars me-2"></i>AI bilan aniqlash-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <section id="find-a-doctor" class="find-a-doctor section">
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Shifokor topish</h2>
+        <p>O'z sohasining yetuk mutaxassislaridan maslahat va davo muolajalarini oling</p>
+    </div>
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row justify-content-center mb-5" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-8 text-center">
+                <div class="search-section">
+                    <h3 class="search-title">O'zingizga mos shifokorni toping</h3>
+                    <p class="search-subtitle">Tajribali tibbiyot mutaxassislarimizning kengaytirilgan katalogidan qidiring</p>
+
+                    <form class="search-form" onsubmit="return false;">
+                        <div class="search-input-group">
+                            <div class="input-wrapper">
+                                <i class="bi bi-person"></i>
+                                <input type="text" class="form-control" name="doctor_name"
+                                       placeholder="Shifokor ismini kiriting" autocomplete="off">
+                            </div>
+                            <div class="select-wrapper">
+                                <i class="bi bi-heart-pulse"></i>
+                                <select class="form-select" name="specialty">
+                                    <option value="">Barcha yo'nalishlar</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="button" class="search-btn">
+                                <i class="bi bi-search"></i> Qidirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="doctors-grid" id="doctors-container" data-aos="fade-up" data-aos-delay="300">
+            {% include 'includes/doctor_list_results.html' %}
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
+            <a href="{% url 'doctors_list' %}" class="btn-view-all">
+                Barcha shifokorlarni ko'rish <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+   <section id="call-to-action" class="call-to-action section light-background">
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="hero-content">
+      <div class="row align-items-center">
+
+        <div class="col-lg-6">
+          <div class="content-wrapper" data-aos="fade-up" data-aos-delay="200">
+            <h1>Har kuni yuqori darajadagi tibbiy yordam</h1>
+            <p>Bizning markazimiz sizga va yaqinlaringizga eng ilg'or tibbiy xizmatlarni taqdim etadi. Salomatligingizni ishonchli qo'llarga topshiring.</p>
+
+            <div class="cta-wrapper">
+              <a href="{% url 'doctors_list' %}" class="primary-cta">
+                <span>Konsultatsiyaga yozilish</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+              <a href="{% url 'services_list' %}" class="secondary-cta">
+                <span>Xizmatlar bilan tanishish</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="image-container" data-aos="fade-left" data-aos-delay="300">
+            <img src="{% static 'assets/img/health/facilities-9.webp' %}" alt="Tibbiy mukammallik" class="img-fluid">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="features-section">
+
+      <div class="row g-0">
+
+        <div class="col-lg-4">
+          <div class="feature-block" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <h3>Ilg'or Texnologiyalar</h3>
+            <p>Aniq tashxis va samarali davolash uchun eng so'nggi rusumdagi tibbiy uskunalar bilan jihozlanganmiz.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="feature-block" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon">
+              <i class="bi bi-clock"></i>
+            </div>
+            <h3>24/7 Doimiy xizmat</h3>
+            <p>Sizga yordam kerak bo'lgan har qanday vaqtda — dam olish kunlarisiz xizmatingizdamiz.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="feature-block" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <h3>Ekspertlar Jamoasi</h3>
+            <p>Ko'p yillik tajribaga ega bo'lgan va o'z sohasining yetuk mutaxassislari sizga xizmat qiladi.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="contact-block">
+      <div class="row">
+
+        <div class="col-lg-8">
+          <div class="contact-content" data-aos="fade-up" data-aos-delay="200">
+            <h2>Shoshilinch tibbiy yordam kerakmi?</h2>
+            <p>Bizning tezkor yordam guruhimiz sizga eng qisqa vaqt ichida tibbiy ko'mak ko'rsatishga doimo tayyor.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="contact-actions" data-aos="fade-up" data-aos-delay="300">
+            <a href="tel:+998991004215" class="emergency-call">
+              <i class="bi bi-telephone"></i>
+              <span>+998 99 100-42-15</span>
+            </a>
+<!--            <a href="contact.html" class="contact-link">Manzilni aniqlash</a>-->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+
+</main>
+<div class="modal fade" id="aiTriageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 25px;">
+      <div class="modal-header border-0 bg-light p-4" style="border-radius: 25px 25px 0 0;">
+        <h5 class="modal-title fw-bold text-primary"><i class="bi bi-robot me-2"></i>AI Konsultant</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div id="aiChatInitial">
+          <p class="text-secondary mb-4">Assalomu alaykum! Iltimos, nima bezovta qilayotganini yozing (masalan: bosh og'rig'i, holsizlik):</p>
+          <textarea id="modalAiInput" class="form-control p-3 border-2" rows="3" style="border-radius: 15px;" placeholder="Shikoyatingizni shu yerga yozing..."></textarea>
+          <button id="btnModalAskAI" class="btn btn-primary w-100 py-3 mt-4 rounded-pill fw-bold shadow">Tahlil qilish</button>
+        </div>
+        <div id="aiResultArea" class="d-none text-center">
+          <div class="p-4 bg-light rounded-4 border-start border-4 border-primary mb-4 text-start">
+            <p class="text-muted small mb-1">Tavsiya etilgan yo'nalish:</p>
+            <h3 id="suggestedDeptName" class="text-primary fw-bold">-</h3>
+          </div>
+          <button id="btnGoToBooking" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow">Hozirroq navbat olish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.ai-icon-pulse { animation: pulse-white 2s infinite; }
+@keyframes pulse-white {
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+</style>
+<script>
+
+// AI Modal logic
+document.addEventListener('DOMContentLoaded', function() {
+    const askBtn = document.getElementById('btnModalAskAI');
+    if (askBtn) {
+        askBtn.addEventListener('click', function() {
+            const complaintInput = document.getElementById('modalAiInput');
+            const complaint = complaintInput ? complaintInput.value : '';
+            const btn = this;
+
+            if (complaint.length < 5) {
+                alert("Iltimos, batafsilroq yozing");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Tahlil qilinmoqda...';
+
+            fetch(`/ai-triage/?complaint=${encodeURIComponent(complaint)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.dept_id) {
+                        document.getElementById('suggestedDeptName').innerText = data.dept_name;
+                        document.getElementById('aiChatInitial').classList.add('d-none');
+                        document.getElementById('aiResultArea').classList.remove('d-none');
+
+                        document.getElementById('btnGoToBooking').onclick = function() {
+                            const modalElement = document.getElementById('aiTriageModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if (modalInstance) modalInstance.hide();
+
+                            const specialtySelect = document.querySelector('select[name="specialty"]');
+                            if (specialtySelect) {
+                                specialtySelect.value = data.dept_id;
+                                document.getElementById('find-a-doctor').scrollIntoView({ behavior: 'smooth' });
+                            }
+                        };
+                    } else if (data.not_found) {
+                        alert("Kechirasiz, mos bo'lim topilmadi.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Xato:", err);
+                    alert("Server bilan bog'lanishda xato yuz berdi.");
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Tahlil qilish';
+                });
+        });
+    }
+});
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="doctor_name"]');
+    const specialtySelect = document.querySelector('select[name="specialty"]');
+    const container = document.getElementById('doctors-container');
+
+    function updateDoctors() {
+        const name = nameInput.value;
+        const specialty = specialtySelect.value;
+        const url = `?doctor_name=${encodeURIComponent(name)}&specialty=${encodeURIComponent(specialty)}`;
+
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            container.innerHTML = html;
+            if (typeof AOS !== 'undefined') { AOS.refresh(); }
+        })
+        .catch(err => console.error("Xatolik:", err));
+    }
+
+    nameInput.addEventListener('input', updateDoctors);
+    specialtySelect.addEventListener('change', updateDoctors);
+});
+</script>
+{% endblock %}
+
+
+
+<!--<!DOCTYPE html>-->
+
+
+
+<!--{% load static %}-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="utf-8">-->
+<!--  <meta content="width=device-width, initial-scale=1.0" name="viewport">-->
+<!--  <title>BOBUR DOKTOR SHIFO</title>-->
+
+<!--  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">-->
+<!--  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">-->
+
+<!--  <style>-->
+
+<!--    /* Menyu yozuvlarini qalinlashtirish */-->
+<!--.navmenu ul li a {-->
+<!--  font-weight: 700 !important; /* Yozuvlar qalinligi oshirildi */-->
+<!--  font-size: 15px;-->
+<!--  color: #2c3155 !important;-->
+<!--}-->
+
+<!--/* Aktiv menyu yozuvi uchun */-->
+<!--.navmenu ul li a.active {-->
+<!--  color: #00a0e3 !important;-->
+<!--}-->
+
+<!--/* Tibbiy Emblema (Milliy uslubida) */-->
+<!--.medical-logo-emblem {-->
+<!--  width: 50px;-->
+<!--  height: 50px;-->
+<!--  border: 2px solid #00a0e3;-->
+<!--  border-radius: 50%;-->
+<!--  display: flex;-->
+<!--  align-items: center;-->
+<!--  justify-content: center;-->
+<!--  margin-right: 15px;-->
+<!--  background: #fff;-->
+<!--  position: relative;-->
+<!--}-->
+<!--.medical-logo-emblem i {-->
+<!--  color: #00a0e3;-->
+<!--  font-size: 24px;-->
+<!--}-->
+<!--    /* Hero qismini pastga tushirish */-->
+<!--    #hero { padding-top: 140px; }-->
+
+<!--    /* Tibbiy Emblema (Milliy uslubida) */-->
+<!--    .medical-logo-emblem {-->
+<!--      width: 50px;-->
+<!--      height: 50px;-->
+<!--      border: 2px solid #00a0e3;-->
+<!--      border-radius: 50%;-->
+<!--      display: flex;-->
+<!--      align-items: center;-->
+<!--      justify-content: center;-->
+<!--      margin-right: 15px;-->
+<!--      background: #fff;-->
+<!--      position: relative;-->
+<!--    }-->
+<!--    .medical-logo-emblem i {-->
+<!--      color: #00a0e3;-->
+<!--      font-size: 24px;-->
+<!--    }-->
+<!--    .medical-logo-emblem::after {-->
+<!--      content: '';-->
+<!--      position: absolute;-->
+<!--      width: 58px;-->
+<!--      height: 58px;-->
+<!--      border: 1px dashed #00a0e3;-->
+<!--      border-radius: 50%;-->
+<!--    }-->
+
+<!--    /* Topbar ikonkalari */-->
+<!--    .topbar .contact-info i {-->
+<!--      color: #00a0e3;-->
+<!--      font-size: 16px;-->
+<!--      margin-right: 8px;-->
+<!--    }-->
+<!--    .topbar .contact-info span, .topbar .contact-info a {-->
+<!--      font-size: 14px;-->
+<!--      color: #fff;-->
+<!--    }-->
+
+<!--    /* Trust Badges */-->
+<!--    .trust-badges { display: flex; gap: 12px; flex-wrap: wrap; }-->
+<!--    .badge-item {-->
+<!--      display: flex; align-items: center; gap: 8px;-->
+<!--      background: rgba(0, 160, 227, 0.1);-->
+<!--      padding: 6px 16px; border-radius: 50px;-->
+<!--      border: 1px solid rgba(0, 160, 227, 0.15);-->
+<!--    }-->
+<!--    .badge-item i { color: #00a0e3; }-->
+<!--    .badge-item span { color: #2c3155; font-weight: 600; font-size: 14px; }-->
+
+<!--    /* Rasm ustidagi kartochkalar */-->
+<!--    .hero-visual .main-image { position: relative; }-->
+<!--    .floating-card {-->
+<!--      position: absolute; background: #ffffff;-->
+<!--      padding: 15px; border-radius: 15px;-->
+<!--      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); z-index: 10;-->
+<!--    }-->
+<!--    .appointment-card { top: 10%; right: -20px; display: flex; align-items: center; gap: 10px; min-width: 200px; }-->
+<!--    .rating-card { bottom: 10%; left: -20px; min-width: 140px; }-->
+
+<!--    @media (max-width: 992px) {-->
+<!--      .floating-card { position: relative; right: 0; left: 0; margin-top: 10px; }-->
+<!--      #hero { padding-top: 100px; }-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+
+<!--<body class="index-page">-->
+<!--  <header id="header" class="header fixed-top">-->
+<!--    <div class="topbar d-flex align-items-center dark-background">-->
+<!--      <div class="container d-flex justify-content-center justify-content-md-between">-->
+<!--        <div class="contact-info d-flex align-items-center">-->
+<!--          <i class="bi bi-telephone-fill"></i><span>+998 99 100-42-15</span>-->
+<!--          <i class="bi bi-clock-fill ms-4"></i><span>Dush - Shan: 8.00 - 17.00</span>-->
+<!--          <i class="bi bi-envelope-fill ms-4 d-none d-lg-inline"></i><a href="mailto:BOBUR@MAIL.RU" class="d-none d-lg-inline">BOBUR@MAIL.RU</a>-->
+<!--        </div>-->
+<!--        <div class="social-links d-none d-md-flex align-items-center">-->
+<!--          <a href="#" class="telegram"><i class="bi bi-telegram"></i></a>-->
+<!--          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>-->
+<!--          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>-->
+<!--          <a href="#" class="youtube"><i class="bi bi-youtube"></i></a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="branding d-flex align-items-center" style="padding: 15px 0; background: #fff;">-->
+<!--      <div class="container position-relative d-flex align-items-center justify-content-between">-->
+<!--        <a href="index.html" class="logo d-flex align-items-center text-decoration-none">-->
+<!--          <div class="medical-logo-emblem">-->
+<!--            <i class="bi bi-heart-pulse-fill"></i>-->
+<!--          </div>-->
+<!--          <h1 class="sitename" style="font-size: 24px; font-weight: 700; color: #2c3155; margin: 0;">BOBUR DOKTOR SHIFO</h1>-->
+<!--        </a>-->
+<!--        <nav id="navmenu" class="navmenu">-->
+<!--          <ul>-->
+<!--        <li><a href="index.html" class="active">Markaz</a></li>-->
+<!--        <li><a href="services.html">Xizmatlar</a></li>-->
+<!--        <li><a href="departments.html">Bo'limlar</a></li>-->
+<!--        <li><a href="doctors.html">Xodimlar</a></li>-->
+<!--        <li><a href="price.html">Price</a></li>-->
+<!--        <li><a href="news.html">Yangiliklar</a></li>-->
+<!--        <li><a href="contact.html" class="btn-get-started ms-3">BOG'LANISH <i class="bi bi-chevron-right"></i></a></li>-->
+<!--      </ul>-->
+<!--        </nav>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </header>-->
+
+<!--  <main class="main">-->
+<!--    <section id="hero" class="hero section">-->
+<!--      <div class="container" data-aos="fade-up" data-aos-delay="100">-->
+<!--        <div class="row align-items-center">-->
+<!--          <div class="col-lg-6">-->
+<!--            <div class="hero-content">-->
+<!--              <div class="trust-badges mb-4">-->
+<!--                <div class="badge-item">-->
+<!--  <i class="bi bi-shield-check"></i>-->
+<!--  <span>Xalqaro sertifikatlangan</span>-->
+<!--</div>-->
+<!--<div class="badge-item">-->
+<!--  <i class="bi bi-clock"></i>-->
+<!--  <span>24/7 Tez yordam</span>-->
+<!--</div>-->
+<!--<div class="badge-item">-->
+<!--  <i class="bi bi-star-fill"></i>-->
+<!--  <span>4.9/5 Reyting</span>-->
+<!--</div>-->
+<!--              </div>-->
+<!--             <h1 style="font-size: 3.5rem; font-weight: 800; color: #2c3155;">-->
+<!--  Yuqori Sifatli <span style="color: #00a0e3;">Tibbiyot</span> Va Professional G'amxo'rlik-->
+<!--</h1>-->
+
+<!--<p class="hero-description">-->
+<!--  Bizning markazimizda eng zamonaviy texnologiyalar va tajribali mutaxassislar sizning sog'lig'ingiz uchun xizmat qiladi.-->
+<!--</p>-->
+
+<!--<div class="hero-actions">-->
+<!--  <a href="appointment.html" class="btn btn-primary px-4 py-2 rounded-pill">Qabulga yozilish</a>-->
+
+<!--  <a href="https://www.youtube.com/watch?v=CQY1w9OCodM" class="btn btn-outline glightbox">-->
+<!--    <i class="bi bi-play-circle me-2"></i> Biz haqimizda video-->
+<!--  </a>-->
+<!--</div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="col-lg-6">-->
+<!--            <div class="hero-visual" data-aos="fade-left">-->
+<!--              <div class="main-image">-->
+<!--                <img src="{% static 'assets/img/health/staff-10.webp' %}" alt="Doctor" class="img-fluid rounded-4 shadow">-->
+<!--                <div class="floating-card appointment-card">-->
+<!--                  <div class="card-icon" style="background: #eef7ff; color: #00a0e3; padding: 10px; border-radius: 10px;"><i class="bi bi-calendar-check fs-4"></i></div>-->
+<!--                  <div class="card-content">-->
+<!--                    <h6 class="mb-0 fw-bold">Navbatdagi qabul</h6>-->
+<!--<p class="mb-0 text-primary small">Bugun soat 14:30</p>-->
+<!--<small class="text-muted">Doktor Sarah Johnson</small>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="floating-card rating-card">-->
+<!--                  <div class="rating-stars mb-1" style="color: #ffc107;"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>-->
+<!--                  <h6 class="mb-0 fw-bold">4.9/5</h6>-->
+<!--                  <small class="text-muted">1,234 Ko`rishlar</small>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </section>-->
+<!--    <section id="home-about" class="home-about section">-->
+
+<!--  <div class="container" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--    <div class="row align-items-center">-->
+<!--      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="200">-->
+<!--        <div class="about-content">-->
+<!--          <h2 class="section-heading">Samimiy G'amxo'rlik, Zamonaviy Tibbiyot</h2>-->
+<!--          <p class="lead-text">Chorak asrdan ko'proq vaqt davomida biz eng so'nggi tibbiy texnologiyalarni bemorlarimiz munosib bo'lgan shaxsiy e'tibor bilan birlashtirib, yuqori sifatli sog'liqni saqlash xizmatlarini taqdim etib kelmoqdamiz.</p>-->
+
+<!--          <p>Bizning ko'p tarmoqli mutaxassislar jamoamiz har bir bemorning o'ziga xos ehtiyojlariga moslashtirilgan har tomonlama yordam olishini ta'minlash uchun hamkorlikda ishlaydi. Profilaktik xizmatlardan tortib murakkab muolajalargacha, biz ishonch va shifo muhitini yaratgan holda tibbiy mukammallikning eng yuqori standartlarini saqlaymiz.</p>-->
+
+<!--          <div class="stats-grid">-->
+<!--            <div class="stat-item">-->
+<!--              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="15000"-->
+<!--                data-purecounter-duration="1"></div>-->
+<!--              <div class="stat-label">Bemorlarimiz</div>-->
+<!--            </div>-->
+<!--            <div class="stat-item">-->
+<!--              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="25"-->
+<!--                data-purecounter-duration="1"></div>-->
+<!--              <div class="stat-label">Yillik tajriba</div>-->
+<!--            </div>-->
+<!--            <div class="stat-item">-->
+<!--              <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="50"-->
+<!--                data-purecounter-duration="1"></div>-->
+<!--              <div class="stat-label">Mutaxassislar</div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="cta-section">-->
+<!--            <a href="about.html" class="btn-primary">Biz haqimizda batafsil</a>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">-->
+<!--        <div class="about-visual">-->
+<!--          <div class="main-image">-->
+<!--            <img src="{% static 'assets/img/health/facilities-9.webp' %}" alt="Zamonaviy tibbiy bino" class="img-fluid">-->
+<!--          </div>-->
+<!--          <div class="floating-card">-->
+<!--            <div class="card-content">-->
+<!--              <div class="icon">-->
+<!--                <i class="bi bi-heart-pulse"></i>-->
+<!--              </div>-->
+<!--              <div class="card-text">-->
+<!--                <h4>24/7 Tez yordam</h4>-->
+<!--                <p>Sizga kerak bo'lgan vaqtda doim shu yerdamiz</p>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="experience-badge">-->
+<!--            <div class="badge-content">-->
+<!--              <span class="years">25+</span>-->
+<!--              <span class="text">Yillik ishonchli xizmat</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</section>-->
+
+<!--   <section id="featured-departments" class="featured-departments section">-->
+
+<!--  <div class="container section-title" data-aos="fade-up">-->
+<!--    <h2>Asosiy Bo'limlar</h2>-->
+<!--    <p>Bizning markazimizda yuqori malakali mutaxassislar va zamonaviy texnologiyalar jamlangan</p>-->
+<!--  </div><div class="container" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--    <div class="row g-5">-->
+
+<!--      <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="100">-->
+<!--        <div class="specialty-card">-->
+<!--          <div class="specialty-content">-->
+<!--            <div class="specialty-meta">-->
+<!--              <span class="specialty-label">Ixtisoslashgan yordam</span>-->
+<!--            </div>-->
+<!--            <h3>Kardiologiya</h3>-->
+<!--            <p>Yurak salomatligini har tomonlama boshqarish uchun ilg'or diagnostika va shaxsiy davolash protokollari.</p>-->
+<!--            <div class="specialty-features">-->
+<!--              <span><i class="bi bi-check-circle-fill"></i>24/7 Shoshilinch kardiologik yordam</span>-->
+<!--              <span><i class="bi bi-check-circle-fill"></i>Kam invaziv muolajalar</span>-->
+<!--            </div>-->
+<!--            <a href="department-details.html" class="specialty-link">-->
+<!--              Batafsil ma'lumot <i class="bi bi-arrow-right"></i>-->
+<!--            </a>-->
+<!--          </div>-->
+<!--          <div class="specialty-visual">-->
+<!--            <img src="{% static 'assets/img/health/cardiology-1.webp' %}" alt="Kardiologiya" class="img-fluid">-->
+<!--            <div class="visual-overlay">-->
+<!--              <i class="bi bi-heart-pulse"></i>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div><div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">-->
+<!--        <div class="specialty-card">-->
+<!--          <div class="specialty-content">-->
+<!--            <div class="specialty-meta">-->
+<!--              <span class="specialty-label">Ekspert nazorati</span>-->
+<!--            </div>-->
+<!--            <h3>Nevrologiya</h3>-->
+<!--            <p>Miya va orqa miya kasalliklarini davolashda innovatsion yondashuvlar va yuqori aniqlikdagi neyroxirurgiya.</p>-->
+<!--            <div class="specialty-features">-->
+<!--              <span><i class="bi bi-check-circle-fill"></i>Ilg'or neyro-vizualizatsiya</span>-->
+<!--              <span><i class="bi bi-check-circle-fill"></i>Robotlashtirilgan jarrohlik</span>-->
+<!--            </div>-->
+<!--            <a href="department-details.html" class="specialty-link">-->
+<!--              Batafsil ma'lumot <i class="bi bi-arrow-right"></i>-->
+<!--            </a>-->
+<!--          </div>-->
+<!--          <div class="specialty-visual">-->
+<!--            <img src=" {% static 'assets/img/health/neurology-4.webp' %}" alt="Nevrologiya" class="img-fluid">-->
+<!--            <div class="visual-overlay">-->
+<!--              <i class="bi bi-cpu"></i>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">-->
+<!--        <div class="department-highlight">-->
+<!--          <div class="highlight-icon">-->
+<!--            <i class="bi bi-shield-plus"></i>-->
+<!--          </div>-->
+<!--          <h4>Ortopediya</h4>-->
+<!--          <p>Tayanch-harakat tizimini davolash, bo'g'imlarni almashtirish va artroskopik texnikalar.</p>-->
+<!--          <ul class="highlight-list">-->
+<!--            <li>Sport tibbiyoti</li>-->
+<!--            <li>Bo'g'imlarni endoprotezlash</li>-->
+<!--            <li>Umurtqa jarrohligi</li>-->
+<!--          </ul>-->
+<!--          <a href="department-details.html" class="highlight-cta">Batafsil</a>-->
+<!--        </div>-->
+<!--      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">-->
+<!--        <div class="department-highlight">-->
+<!--          <div class="highlight-icon">-->
+<!--            <i class="bi bi-people"></i>-->
+<!--          </div>-->
+<!--          <h4>Pediatriya</h4>-->
+<!--          <p>Yangi tug'ilgan chaqaloqlardan to o'smirlik davrigacha bo'lgan bolalar uchun oilaviy g'amxo'rlik.</p>-->
+<!--          <ul class="highlight-list">-->
+<!--            <li>Neonatal intensiv terapiya</li>-->
+<!--            <li>Rivojlanish pediatriyasi</li>-->
+<!--            <li>Bolalar jarrohligi</li>-->
+<!--          </ul>-->
+<!--          <a href="department-details.html" class="highlight-cta">Batafsil</a>-->
+<!--        </div>-->
+<!--      </div><div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">-->
+<!--        <div class="department-highlight">-->
+<!--          <div class="highlight-icon">-->
+<!--            <i class="bi bi-activity"></i>-->
+<!--          </div>-->
+<!--          <h4>Onkologiya</h4>-->
+<!--          <p>Eng so'nggi terapevtik innovatsiyalar yordamida saraton kasalligiga qarshi kurash dasturlari.</p>-->
+<!--          <ul class="highlight-list">-->
+<!--            <li>Aniq tibbiyot</li>-->
+<!--            <li>Immunoterapiya</li>-->
+<!--            <li>Radiatsion onkologiya</li>-->
+<!--          </ul>-->
+<!--          <a href="department-details.html" class="highlight-cta">Batafsil</a>-->
+<!--        </div>-->
+<!--      </div></div>-->
+
+<!--    <div class="emergency-banner" data-aos="fade-up" data-aos-delay="400">-->
+<!--      <div class="row align-items-center">-->
+<!--        <div class="col-lg-8">-->
+<!--          <div class="emergency-content">-->
+<!--            <h3>24/7 Tez tibbiy yordam xizmati</h3>-->
+<!--            <p>Bizning shoshilinch yordam bo'limimiz eng zamonaviy uskunalar va tajribali shifokorlar bilan ta'minlangan.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-lg-4 text-lg-end">-->
+<!--          <a href="tel:+998991004215" class="emergency-btn">-->
+<!--            <i class="bi bi-telephone-fill"></i>-->
+<!--            Tez yordam: +998 99 100-42-15-->
+<!--          </a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</section>-->
+
+<!--   <section id="featured-services" class="featured-services section">-->
+
+<!--  <div class="container section-title" data-aos="fade-up">-->
+<!--    <h2>Asosiy Xizmatlar</h2>-->
+<!--    <p>Bizning markazimizda barcha turdagi yuqori sifatli tibbiy xizmatlar ko'rsatiladi</p>-->
+<!--  </div><div class="container" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--    <div class="row g-0">-->
+
+<!--      <div class="col-lg-8" data-aos="fade-right" data-aos-delay="200">-->
+<!--        <div class="featured-service-main">-->
+<!--          <div class="service-image-wrapper">-->
+<!--            <img src="{% static 'assets/img/health/consultation-4.webp' %}" alt="Professional tibbiy xizmatlar" class="img-fluid"-->
+<!--              loading="lazy">-->
+<!--            <div class="service-overlay">-->
+<!--              <div class="service-badge">-->
+<!--                <i class="bi bi-heart-pulse"></i>-->
+<!--                <span>Tez yordam</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="service-details">-->
+<!--            <h2>Keng Ko'lamli Tibbiy Mukammallik</h2>-->
+<!--            <p>Bizning klinikamizda har bir bemorga individual yondashuv asosida eng zamonaviy tashxis qo'yish va davolash usullari qo'llaniladi. Sizning salomatligingiz — bizning oliy maqsadimizdir.</p>-->
+<!--            <a href="#!" class="main-cta">Barcha xizmatlarni ko'rish</a>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="col-lg-4" data-aos="fade-left" data-aos-delay="300">-->
+<!--        <div class="services-sidebar">-->
+
+<!--          <div class="service-item" data-aos="fade-up" data-aos-delay="400">-->
+<!--            <div class="service-icon-wrapper">-->
+<!--              <i class="bi bi-capsule"></i>-->
+<!--            </div>-->
+<!--            <div class="service-info">-->
+<!--              <h4>Dermatologiya klinikasi</h4>-->
+<!--              <p>Teri kasalliklarini tashxislash va samarali davolash bo'yicha yuqori malakali mutaxassislar xizmati.</p>-->
+<!--              <a href="#!" class="service-link">Batafsil</a>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="service-item" data-aos="fade-up" data-aos-delay="500">-->
+<!--            <div class="service-icon-wrapper">-->
+<!--              <i class="bi bi-bandaid"></i>-->
+<!--            </div>-->
+<!--            <div class="service-info">-->
+<!--              <h4>Jarrohlik markazi</h4>-->
+<!--              <p>Zamonaviy operatsiya xonalari va eng kam invaziv (kichik kesimli) jarrohlik amaliyotlari.</p>-->
+<!--              <a href="#!" class="service-link">Batafsil</a>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="service-item" data-aos="fade-up" data-aos-delay="600">-->
+<!--            <div class="service-icon-wrapper">-->
+<!--              <i class="bi bi-activity"></i>-->
+<!--            </div>-->
+<!--            <div class="service-info">-->
+<!--              <h4>Diagnostika laboratoriyasi</h4>-->
+<!--              <p>Aniq va tezkor natijalarni ta'minlovchi eng so'nggi rusumdagi laboratoriya tahlillari.</p>-->
+<!--              <a href="#!" class="service-link">Batafsil</a>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--    <div class="specialties-grid" data-aos="fade-up" data-aos-delay="300">-->
+<!--      <div class="row align-items-center">-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <div class="specialty-card">-->
+<!--            <div class="specialty-image">-->
+<!--              <img src="{% static 'assets/img/health/maternal-2.webp' %}" alt="Onalar salomatligi" class="img-fluid" loading="lazy">-->
+<!--            </div>-->
+<!--            <div class="specialty-content">-->
+<!--              <h5>Onalik g'amxo'rligi</h5>-->
+<!--              <span>Homiladorlik va tug'ruqni professional qo'llab-quvvatlash</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <div class="specialty-card">-->
+<!--            <div class="specialty-image">-->
+<!--              <img src="{% static 'assets/img/health/vaccination-3.webp' %}" alt="Vaksina xizmati" class="img-fluid" loading="lazy">-->
+<!--            </div>-->
+<!--            <div class="specialty-content">-->
+<!--              <h5>Vaksinalash</h5>-->
+<!--              <span>To'liq va xavfsiz emlash dasturlari</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <div class="specialty-card">-->
+<!--            <div class="specialty-image">-->
+<!--              <img src="{% static 'assets/img/health/emergency-1.webp' %}" alt="Tez yordam" class="img-fluid" loading="lazy">-->
+<!--            </div>-->
+<!--            <div class="specialty-content">-->
+<!--              <h5>Shoshilinch yordam</h5>-->
+<!--              <span>24/7 rejimida ishlovchi kritik yordam xizmati</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <div class="specialty-card">-->
+<!--            <div class="specialty-image">-->
+<!--              <img src="{% static 'assets/img/health/facilities-6.webp' %}" alt="Ilg'or texnologiya" class="img-fluid" loading="lazy">-->
+<!--            </div>-->
+<!--            <div class="specialty-content">-->
+<!--              <h5>Ilg'or texnologiyalar</h5>-->
+<!--              <span>Eng so'nggi rusumdagi tibbiy uskunalar jamlanmasi</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</section>-->
+
+<!--  <section id="find-a-doctor" class="find-a-doctor section">-->
+
+<!--  <div class="container section-title" data-aos="fade-up">-->
+<!--    <h2>Shifokor topish</h2>-->
+<!--    <p>O'z sohasining yetuk mutaxassislaridan maslahat va davo muolajalarini oling</p>-->
+<!--  </div>-->
+
+<!--  <div class="container" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--    <div class="row justify-content-center mb-5" data-aos="fade-up" data-aos-delay="200">-->
+<!--      <div class="col-lg-8 text-center">-->
+<!--        <div class="search-section">-->
+<!--          <h3 class="search-title">O'zingizga mos shifokorni toping</h3>-->
+<!--          <p class="search-subtitle">Tajribali tibbiyot mutaxassislarimizning kengaytirilgan katalogidan qidiring</p>-->
+<!--          <form class="search-form" action="#!" method="#">-->
+<!--            <div class="search-input-group">-->
+<!--              <div class="input-wrapper">-->
+<!--                <i class="bi bi-person"></i>-->
+<!--                <input type="text" class="form-control" name="doctor_name" placeholder="Shifokor ismini kiriting">-->
+<!--              </div>-->
+<!--              <div class="select-wrapper">-->
+<!--                <i class="bi bi-heart-pulse"></i>-->
+<!--                <select class="form-select" name="specialty">-->
+<!--                  <option value="">Barcha yo'nalishlar</option>-->
+<!--                  <option value="cardiology">Kardiologiya</option>-->
+<!--                  <option value="neurology">Nevrologiya</option>-->
+<!--                  <option value="orthopedics">Ortopediya</option>-->
+<!--                  <option value="pediatrics">Pediatriya</option>-->
+<!--                  <option value="dermatology">Dermatologiya</option>-->
+<!--                  <option value="oncology">Onkologiya</option>-->
+<!--                </select>-->
+<!--              </div>-->
+<!--              <button type="submit" class="search-btn">-->
+<!--                <i class="bi bi-search"></i>-->
+<!--                Qidirish-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="doctors-grid" data-aos="fade-up" data-aos-delay="300">-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="100">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-2.webp' %}" alt="Dr. Amanda Foster" class="img-fluid">-->
+<!--            <div class="status-indicator available"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. Amanda Foster</h4>-->
+<!--            <span class="specialty-tag">Kardiolog mutaxassis</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>14 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">4.9</span>-->
+<!--          <span class="review-count">(127 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Qabulga yozilish</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="200">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-6.webp' %}" alt="Dr. Marcus Johnson" class="img-fluid">-->
+<!--            <div class="status-indicator busy"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. Marcus Johnson</h4>-->
+<!--            <span class="specialty-tag">Nevrologiya eksperti</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>16 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">4.8</span>-->
+<!--          <span class="review-count">(89 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Vaqtni belgilash</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="300">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-4.webp' %}" alt="Dr. Rachel Williams" class="img-fluid">-->
+<!--            <div class="status-indicator available"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. Rachel Williams</h4>-->
+<!--            <span class="specialty-tag">Pediatriya xizmati</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>11 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">5.0</span>-->
+<!--          <span class="review-count">(203 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Qabulga yozilish</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="400">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-8.webp' %}" alt="Dr. David Chen" class="img-fluid">-->
+<!--            <div class="status-indicator offline"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. David Chen</h4>-->
+<!--            <span class="specialty-tag">Ortopedik jarrohlik</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>22 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">4.7</span>-->
+<!--          <span class="review-count">(156 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Vaqtni belgilash</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="500">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-11.webp' %}" alt="Dr. Victoria Torres" class="img-fluid">-->
+<!--            <div class="status-indicator available"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. Victoria Torres</h4>-->
+<!--            <span class="specialty-tag">Dermatologiya xizmati</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>9 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">4.5</span>-->
+<!--          <span class="review-count">(74 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Qabulga yozilish</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="600">-->
+<!--        <div class="profile-header">-->
+<!--          <div class="doctor-avatar">-->
+<!--            <img src="{% static 'assets/img/health/staff-14.webp' %}" alt="Dr. Benjamin Lee" class="img-fluid">-->
+<!--            <div class="status-indicator available"></div>-->
+<!--          </div>-->
+<!--          <div class="doctor-details">-->
+<!--            <h4>Dr. Benjamin Lee</h4>-->
+<!--            <span class="specialty-tag">Onkologik davolash</span>-->
+<!--            <div class="experience-info">-->
+<!--              <i class="bi bi-award"></i>-->
+<!--              <span>19 yillik tajriba</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="rating-section">-->
+<!--          <div class="stars">-->
+<!--            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>-->
+<!--          </div>-->
+<!--          <span class="rating-score">4.9</span>-->
+<!--          <span class="review-count">(194 sharhlar)</span>-->
+<!--        </div>-->
+<!--        <div class="action-buttons">-->
+<!--          <a href="#!" class="btn-secondary">Ma'lumotlar</a>-->
+<!--          <a href="#!" class="btn-primary">Vaqtni belgilash</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--    <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">-->
+<!--      <a href="doctors.html" class="btn-view-all">-->
+<!--        Barcha shifokorlarni ko'rish-->
+<!--        <i class="bi bi-arrow-right"></i>-->
+<!--      </a>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</section>-->
+
+<!--   <section id="call-to-action" class="call-to-action section light-background">-->
+
+<!--  <div class="container" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--    <div class="hero-content">-->
+<!--      <div class="row align-items-center">-->
+
+<!--        <div class="col-lg-6">-->
+<!--          <div class="content-wrapper" data-aos="fade-up" data-aos-delay="200">-->
+<!--            <h1>Har kuni yuqori darajadagi tibbiy yordam</h1>-->
+<!--            <p>Bizning markazimiz sizga va yaqinlaringizga eng ilg'or tibbiy xizmatlarni taqdim etadi. Salomatligingizni ishonchli qo'llarga topshiring.</p>-->
+
+<!--            <div class="cta-wrapper">-->
+<!--              <a href="appointment.html" class="primary-cta">-->
+<!--                <span>Konsultatsiyaga yozilish</span>-->
+<!--                <i class="bi bi-arrow-right"></i>-->
+<!--              </a>-->
+<!--              <a href="services.html" class="secondary-cta">-->
+<!--                <span>Xizmatlar bilan tanishish</span>-->
+<!--                <i class="bi bi-arrow-right"></i>-->
+<!--              </a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-6">-->
+<!--          <div class="image-container" data-aos="fade-left" data-aos-delay="300">-->
+<!--            <img src="{% static 'assets/img/health/facilities-9.webp' %}" alt="Tibbiy mukammallik" class="img-fluid">-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="features-section">-->
+
+<!--      <div class="row g-0">-->
+
+<!--        <div class="col-lg-4">-->
+<!--          <div class="feature-block" data-aos="fade-up" data-aos-delay="200">-->
+<!--            <div class="feature-icon">-->
+<!--              <i class="bi bi-shield-check"></i>-->
+<!--            </div>-->
+<!--            <h3>Ilg'or Texnologiyalar</h3>-->
+<!--            <p>Aniq tashxis va samarali davolash uchun eng so'nggi rusumdagi tibbiy uskunalar bilan jihozlanganmiz.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-4">-->
+<!--          <div class="feature-block" data-aos="fade-up" data-aos-delay="300">-->
+<!--            <div class="feature-icon">-->
+<!--              <i class="bi bi-clock"></i>-->
+<!--            </div>-->
+<!--            <h3>24/7 Doimiy xizmat</h3>-->
+<!--            <p>Sizga yordam kerak bo'lgan har qanday vaqtda — dam olish kunlarisiz xizmatingizdamiz.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-4">-->
+<!--          <div class="feature-block" data-aos="fade-up" data-aos-delay="400">-->
+<!--            <div class="feature-icon">-->
+<!--              <i class="bi bi-people"></i>-->
+<!--            </div>-->
+<!--            <h3>Ekspertlar Jamoasi</h3>-->
+<!--            <p>Ko'p yillik tajribaga ega bo'lgan va o'z sohasining yetuk mutaxassislari sizga xizmat qiladi.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--    <div class="contact-block">-->
+<!--      <div class="row">-->
+
+<!--        <div class="col-lg-8">-->
+<!--          <div class="contact-content" data-aos="fade-up" data-aos-delay="200">-->
+<!--            <h2>Shoshilinch tibbiy yordam kerakmi?</h2>-->
+<!--            <p>Bizning tezkor yordam guruhimiz sizga eng qisqa vaqt ichida tibbiy ko'mak ko'rsatishga doimo tayyor.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-4">-->
+<!--          <div class="contact-actions" data-aos="fade-up" data-aos-delay="300">-->
+<!--            <a href="tel:+998991004215" class="emergency-call">-->
+<!--              <i class="bi bi-telephone"></i>-->
+<!--              <span>+998 99 100-42-15</span>-->
+<!--            </a>-->
+<!--            <a href="contact.html" class="contact-link">Manzilni aniqlash</a>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--</section>-->
+
+
+
+<!--</main>-->
+
+<!--  <footer id="footer" class="footer footer-dark" style="background-color: #2c3155; color: #ffffff; padding-top: 60px;">-->
+
+<!--    <div class="container">-->
+<!--      <div class="row gy-4">-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <div class="footer-info">-->
+<!--            <a href="index.html" class="logo d-flex align-items-center mb-3 text-decoration-none">-->
+<!--               <h3 class="text-white fw-bold mb-0">BOBUR DOKTOR SHIFO</h3>-->
+<!--            </a>-->
+<!--            <div class="contact-details mt-4">-->
+<!--              <p class="mb-2"><i class="bi bi-geo-alt me-2 text-info"></i> Farg'ona viloyati, Dang'ara tumani, Dang'ara tumanining shaharchalari Sanoat ko'chasi, 1A-uy</p>-->
+
+<!--              <p class="mb-2"><i class="bi bi-telephone me-2 text-info"></i> +998 71 205 15 14</p>-->
+<!--              <p class="mb-2"><i class="bi bi-envelope me-2 text-info"></i> BOBUR@MAIL.RU</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6 footer-links">-->
+<!--          <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Bo'limlar</h4>-->
+<!--          <ul class="list-unstyled">-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Ritm buzilishi</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Kolopraktalogiya</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Ko'z mikroxirurgiyasi</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Umumiy terapiya</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Ginekologiya</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Neyroxirurgiya</a></li>-->
+<!--          </ul>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6 footer-links">-->
+<!--          <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Tez havolalar</h4>-->
+<!--          <ul class="list-unstyled">-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Markaz haqida</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Xizmatlar</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Xodimlar</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Bo'limlar</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Yangiliklar</a></li>-->
+<!--            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Bog'lanish</a></li>-->
+<!--          </ul>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-3 col-md-6">-->
+<!--          <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Ish vaqti</h4>-->
+<!--          <ul class="list-unstyled text-white-50">-->
+<!--            <li class="mb-2">Dush - Sesh: <span class="text-white">9.00 - 17.00</span></li>-->
+<!--            <li class="mb-2">Chor - Pay: <span class="text-white">9.00 - 17.00</span></li>-->
+<!--            <li class="mb-2">Juma - Shan: <span class="text-white">9.00 - 16.00</span></li>-->
+<!--            <li class="mb-2">Shanba: <span class="text-white">9.00 - 16.00</span></li>-->
+<!--            <li class="mb-2">Yakshanba: <span class="text-info fw-bold">Yopiq</span></li>-->
+<!--          </ul>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="footer-newsletter mt-5 py-4" style="background-color: #1f2341;">-->
+<!--      <div class="container text-center">-->
+<!--        <div class="row align-items-center justify-content-center">-->
+<!--          <div class="col-lg-12 text-white">-->
+<!--            <strong class="me-3">Ijtimoiy tarmoqlar:</strong>-->
+<!--            <a href="https://t.me/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-telegram"></i></a>-->
+<!--            <a href="https://instagram.com/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-instagram"></i></a>-->
+<!--            <a href="https://facebook.com/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-facebook"></i></a>-->
+<!--            <a href="https://youtube.com/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-youtube"></i></a>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="footer-bottom py-3 text-center text-white-50" style="background-color: #1f2341; font-size: 13px;">-->
+<!--      <div class="container border-top border-secondary pt-3">-->
+<!--        Mualliflik huquqi @ 2026 Bobur Doktor Shifo tibbiyot markazi. Barcha huquqlar himoyalangan. <strong>RamilIT</strong>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </footer>-->
+
+<!--  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center" style="background-color: #00a0e3;"><i class="bi bi-arrow-up-short text-white"></i></a>-->
+
+<!--  <div id="preloader"></div>-->
+
+<!--  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>-->
+<!--  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>-->
+<!--  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>-->
+<!--  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>-->
+<!--  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>-->
+<!--  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>-->
+<!--  <script src="{% static 'assets/js/main.js' %}"></script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+

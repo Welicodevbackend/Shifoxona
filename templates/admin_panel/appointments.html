@@ -1,0 +1,260 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+
+<style>
+    .select2-container--bootstrap-5 .select2-selection {
+        border-radius: 8px;
+        height: 38px;
+    }
+    .select2-dropdown {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+</style>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Qabullar (Offline)</h3>
+        <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+            <i class="fas fa-plus me-2"></i> Yangi navbat
+        </button>
+    </div>
+
+    <div class="card p-3 mb-4 border-0 shadow-sm">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Bemor ismi yoki telefon...">
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th class="ps-4">Sana/Vaqt</th>
+                        <th>Bemor</th>
+                        <th>Shifokor</th>
+                        <th>Xizmat</th>
+                        <th>Holati</th>
+                        <th class="text-end pe-4">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentTableBody">
+                    {% include 'admin_panel/partials/appointment_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addAppointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">Yangi navbat yozish</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'book_appointment_dashboard' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Bemor F.I.Sh</label>
+                            <input type="text" name="patient_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Telefon raqam</label>
+                            <input type="text" name="patient_phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+    <label class="form-label small fw-bold text-secondary">Bo'lim</label>
+    <select name="department" id="id_dept" class="form-select select2" required>
+        <option value="">Bo'limni qidirib tanlang...</option>
+        {% for dept in departments %}
+            <option value="{{ dept.id }}">{{ dept.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Shifokor</label>
+                            <select name="doctor" id="id_doctor" class="form-select" required disabled>
+                                <option value="">Avval bo'limni tanlang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Sana</label>
+                            <input type="date" name="date" id="id_date" class="form-control" required min="{{ today|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Vaqt</label>
+                            <select name="time_slot" id="id_time" class="form-select" required disabled>
+                                <option value="">Avval sana tanlang</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="p-3 bg-light rounded border">
+                                <label class="fw-bold small text-primary mb-2 d-block">Xizmat turi (Faqat biri):</label>
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <select name="service" class="form-select form-select-sm service-toggle">
+                                            <option value="">-- Xizmat --</option>
+                                            {% for s in services %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="lab_test" class="form-select form-select-sm service-toggle">
+                                            <option value="">-- Laboratoriya --</option>
+                                            {% for l in labs %}<option value="{{ l.id }}">{{ l.name }}</option>{% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-center ps-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input service-toggle" type="checkbox" name="is_consultation" id="is_cons">
+                                            <label class="form-check-label small" for="is_cons">Konsultatsiya</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary px-4">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bo'lim tanlanganda shifokorlarni yuklash
+document.getElementById('id_dept').addEventListener('change', function() {
+    const deptId = this.value;
+    const docSelect = document.getElementById('id_doctor');
+    docSelect.innerHTML = '<option value="">Yuklanmoqda...</option>';
+
+    fetch(`/dashboard/api/get-doctors/?department_id=${deptId}`)
+        .then(res => res.json())
+        .then(data => {
+            docSelect.innerHTML = '<option value="">Shifokorni tanlang</option>';
+            data.doctors.forEach(doc => {
+                docSelect.innerHTML += `<option value="${doc.id}">${doc.full_name}</option>`;
+            });
+            docSelect.disabled = false;
+        });
+});
+
+// Shifokor va sana tanlanganda bo'sh vaqtlarni yuklash
+function updateSlots() {
+    const docId = document.getElementById('id_doctor').value;
+    const date = document.getElementById('id_date').value;
+    const timeSelect = document.getElementById('id_time');
+
+    if (docId && date) {
+        timeSelect.innerHTML = '<option value="">...</option>';
+        fetch(`/dashboard/api/available-slots/?doctor=${docId}&date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) {
+                    alert(data.error);
+                    timeSelect.disabled = true;
+                } else {
+                    timeSelect.innerHTML = '';
+                    data.available_slots.forEach(slot => {
+                        timeSelect.innerHTML += `<option value="${slot}">${slot}</option>`;
+                    });
+                    timeSelect.disabled = false;
+                }
+            });
+    }
+}
+document.getElementById('id_doctor').addEventListener('change', updateSlots);
+document.getElementById('id_date').addEventListener('change', updateSlots);
+
+// Faqat bitta xizmat turini tanlashga ruxsat berish
+document.querySelectorAll('.service-toggle').forEach(el => {
+    el.addEventListener('change', function() {
+        document.querySelectorAll('.service-toggle').forEach(other => {
+            if (other !== this) {
+                if (other.type === 'checkbox') other.checked = false;
+                else other.value = '';
+            }
+        });
+    });
+});
+
+
+// Buni appointments.html dagi <script> blokiga qo'sh:
+function openEditModal(id) {
+    fetch(`/dashboard/appointments/${id}/edit/`, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('editModalContent').innerHTML = html;
+        new bootstrap.Modal(document.getElementById('editAppointmentModal')).show();
+    });
+}
+// 1. Select2 ni faollashtirish (Qidiruv uchun)
+$(document).ready(function() {
+    $('.select2').select2({
+        dropdownParent: $('#addAppointmentModal'), // Modal ichida ishlashi uchun shart
+        width: '100%',
+        placeholder: "Bo'limni tanlang..."
+    });
+});
+
+// 2. Forma topshirilishidan oldin tekshirish (Validation)
+document.querySelector('#addAppointmentModal form').addEventListener('submit', function(e) {
+    const patientName = this.querySelector('[name="patient_name"]').value.trim();
+    const patientPhone = this.querySelector('[name="patient_phone"]').value.trim();
+    const dept = document.getElementById('id_dept').value;
+    const doctor = document.getElementById('id_doctor').value;
+    const date = document.getElementById('id_date').value;
+    const time = document.getElementById('id_time').value;
+
+    // Tekshirish: Agar birorta maydon bo'sh bo'lsa
+    if (!patientName || !patientPhone || !dept || !doctor || !date || !time) {
+        e.preventDefault(); // Formani yubormaslik
+        Swal.fire({
+            icon: 'warning',
+            title: 'Diqqat!',
+            text: 'Iltimos, barcha majburiy ustunlarni to\'ldiring!',
+            confirmButtonColor: '#3085d6'
+        });
+        return;
+    }
+});
+
+// 3. Django Messages (Muvaffaqiyatli saqlanganda chiroyli xabar)
+{% if messages %}
+    {% for message in messages %}
+        Swal.fire({
+            icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+            title: "{% if message.tags == 'success' %}Muvaffaqiyatli!{% elif message.tags == 'error' %}O'chirildi!{% else %}Xabar{% endif %}",
+            text: "{{ message|safe }}",
+            timer: 2000,
+            showConfirmButton: false
+        });
+    {% endfor %}
+{% endif %}
+
+$(document).ready(function() {
+    // Select2 ni modal ichida ishlashi uchun sozlash
+    $('#id_dept').select2({
+        dropdownParent: $('#addAppointmentModal'), // Modal ichida qidiruv ishlashi uchun shart!
+        width: '100%',
+        placeholder: "Bo'limni tanlang...",
+        allowClear: true,
+        language: {
+            noResults: function() {
+                return "Bunday bo'lim topilmadi";
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

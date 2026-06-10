@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{% block title %}BOBUR DOKTOR SHIFO{% endblock %}</title>
+
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif !important; /* Butun sayt shriftini o'zgartiradi */
+    }
+</style>
+
+  <style>
+    /* Menyu yozuvlarini qalinlashtirish */
+    .navmenu ul li a {
+      font-weight: 700 !important;
+      font-size: 15px;
+      color: #2c3155 !important;
+      position: relative;
+    }
+
+    /* Aktiv menyu yozuvi uchun */
+    .navmenu ul li a.active,
+    .navmenu ul li.dropdown > a.active-parent {
+      color: #00a0e3 !important;
+    }
+
+    /* Chiziqcha boshqaruvi */
+    .navmenu ul li a::before {
+      content: "" !important;
+      position: absolute !important;
+      width: 0 !important;
+      height: 2px !important;
+      bottom: -5px !important;
+      left: 0 !important;
+      background-color: #00a0e3 !important;
+      visibility: hidden !important;
+      transition: all 0.3s ease-in-out !important;
+    }
+
+    /* Faqat active yoki active-parent bo'lganda chiziq chiqadi */
+    .navmenu ul li a.active::before,
+    .navmenu ul li.dropdown > a.active-parent::before {
+      width: 100% !important;
+      visibility: visible !important;
+    }
+
+    /* Desktopda sichqoncha borganda menyu ochilishi */
+    @media (min-width: 1200px) {
+      .navmenu .dropdown:hover > ul {
+        opacity: 1;
+        visibility: visible;
+        top: 100%;
+      }
+    }
+
+    /* Tibbiy Emblema */
+    .medical-logo-emblem {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #00a0e3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      background: #fff;
+      position: relative;
+    }
+    .medical-logo-emblem i {
+      color: #00a0e3;
+      font-size: 24px;
+    }
+    .medical-logo-emblem::after {
+      content: '';
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border: 1px dashed #00a0e3;
+      border-radius: 50%;
+    }
+
+    #hero { padding-top: 140px; }
+
+    .topbar .contact-info i {
+      color: #00a0e3;
+      font-size: 16px;
+      margin-right: 8px;
+    }
+    .topbar .contact-info span, .topbar .contact-info a {
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .trust-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+    .badge-item {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0, 160, 227, 0.1);
+      padding: 6px 16px; border-radius: 50px;
+      border: 1px solid rgba(0, 160, 227, 0.15);
+    }
+    .badge-item i { color: #00a0e3; }
+    .badge-item span { color: #2c3155; font-weight: 600; font-size: 14px; }
+
+    .hero-visual .main-image { position: relative; }
+    .floating-card {
+      position: absolute; background: #ffffff;
+      padding: 15px; border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); z-index: 10;
+    }
+    .appointment-card { top: 10%; right: -20px; display: flex; align-items: center; gap: 10px; min-width: 200px; }
+    .rating-card { bottom: 10%; left: -20px; min-width: 140px; }
+
+    @media (max-width: 992px) {
+      .floating-card { position: relative; right: 0; left: 0; margin-top: 10px; }
+      #hero { padding-top: 100px; }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="index-page">
+  <header id="header" class="header fixed-top">
+    <div class="topbar d-flex align-items-center dark-background">
+      <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="contact-info d-flex align-items-center">
+          <i class="bi bi-telephone-fill"></i><span>+998 99 100-42-15</span>
+          <i class="bi bi-clock-fill ms-4"></i><span>Dush - Shan: 9.00 - 17.00</span>
+          <i class="bi bi-envelope-fill ms-4 d-none d-lg-inline"></i><a href="mailto:BOBUR@MAIL.RU" class="d-none d-lg-inline">BOBUR@MAIL.RU</a>
+        </div>
+       <div class="social-links d-none d-md-flex align-items-center">
+  <a href="https://t.me/DoctorBobur" target="_blank" class="telegram">
+    <i class="bi bi-telegram"></i>
+  </a>
+
+  <a href="https://www.instagram.com/doctorbobur_shifo/" target="_blank" class="instagram">
+    <i class="bi bi-instagram"></i>
+  </a>
+
+  <a href="https://www.facebook.com/doctorbobur" target="_blank" class="facebook">
+    <i class="bi bi-facebook"></i>
+  </a>
+
+  <a href="https://www.youtube.com/@DoctorBobur" target="_blank" class="youtube">
+    <i class="bi bi-youtube"></i>
+  </a>
+</div>
+      </div>
+    </div>
+
+    <div class="branding d-flex align-items-center" style="padding: 15px 0; background: #fff;">
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="{% url 'home' %}" class="logo d-flex align-items-center text-decoration-none">
+          <div class="medical-logo-emblem">
+            <i class="bi bi-heart-pulse-fill"></i>
+          </div>
+          <h1 class="sitename" style="font-size: 24px; font-weight: 700; color: #2c3155; margin: 0;">BOBUR DOKTOR SHIFO</h1>
+        </a>
+<!--        <nav id="navmenu" class="navmenu">-->
+<!--          <ul>-->
+<!--            <li class="dropdown">-->
+<!--              <a href="#" class="{% if request.resolver_match.url_name == 'markaz_haqida' or request.resolver_match.url_name == 'rahbariyat' %}active-parent{% endif %}">-->
+<!--                <span>Markaz</span>-->
+<!--              </a>-->
+<!--              <ul>-->
+<!--                <li><a href="{% url 'markaz_haqida' %}" class="{% if request.resolver_match.url_name == 'markaz_haqida' %}active{% endif %}">Markaz haqida</a></li>-->
+<!--                <li><a href="{% url 'rahbariyat' %}" class="{% if request.resolver_match.url_name == 'rahbariyat' %}active{% endif %}">Rahbariyat</a></li>-->
+<!--              </ul>-->
+<!--            </li>-->
+
+<!--         <li>-->
+<!--    <a href="{% url 'services_list' %}"-->
+<!--       class="{% if request.path == '/services/' %}active{% endif %}">-->
+<!--       Xizmatlar-->
+<!--    </a>-->
+<!--</li>   <li><a href="{% url 'departments_page' %}" class="{% if request.resolver_match.url_name == 'departments_page' %}active{% endif %}">Bo'limlar</a></li>-->
+<!--            <li><a href="{% url 'doctors_list' %}" class="{% if request.resolver_match.url_name == 'doctors_list' %}active{% endif %}">Xodimlar</a></li>-->
+<!--           <li>-->
+<!--    <a href="{% url 'price_list' %}" class="{% if request.resolver_match.url_name == 'price_list' %}active{% endif %}">-->
+<!--        Price-->
+<!--    </a>-->
+<!--</li> <li>-->
+<!--    <a href="{% url 'news_list' %}" class="{% if request.path == '/yangiliklar/' %}active{% endif %}">-->
+<!--        Yangiliklar-->
+<!--    </a>-->
+<!--</li>      <li><a href="{% url 'contact' %}" class="btn-get-started ms-3 {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">BOG'LANISH <i class="bi bi-chevron-right"></i></a></li>-->
+<!--          </ul>-->
+<!--        </nav>-->
+
+          <nav id="navmenu" class="navmenu">
+  <ul>
+    <li>
+      <a href="{% url 'markaz_haqida' %}"
+         class="{% if request.resolver_match.url_name == 'markaz_haqida' %}active{% endif %}">
+        Markaz
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'services_list' %}"
+         class="{% if request.path == '/services/' %}active{% endif %}">
+        Xizmatlar
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'departments_page' %}"
+         class="{% if request.resolver_match.url_name == 'departments_page' %}active{% endif %}">
+        Bo'limlar
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'doctors_list' %}"
+         class="{% if request.resolver_match.url_name == 'doctors_list' %}active{% endif %}">
+        Xodimlar
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'price_list' %}"
+         class="{% if request.resolver_match.url_name == 'price_list' %}active{% endif %}">
+        Price
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'news_list' %}"
+         class="{% if request.path == '/yangiliklar/' %}active{% endif %}">
+        Yangiliklar
+      </a>
+    </li>
+
+    <li>
+      <a href="{% url 'contact' %}"
+         class="btn-get-started ms-3 {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
+        BOG'LANISH <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer id="footer" class="footer footer-dark" style="background-color: #2c3155; color: #ffffff; padding-top: 60px;">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-info">
+            <a href="{% url 'home' %}" class="logo d-flex align-items-center mb-3 text-decoration-none">
+               <h3 class="text-white fw-bold mb-0">BOBUR DOKTOR SHIFO</h3>
+            </a>
+            <div class="contact-details mt-4">
+              <p class="mb-2"><i class="bi bi-geo-alt me-2 text-info"></i> Farg'ona viloyati, Dang'ara tumani, Dang'ara tumanining shaharchalari Sanoat ko'chasi, 1A-uy</p>
+              <p class="mb-2"><i class="bi bi-telephone me-2 text-info"></i> +998 71 205 15 14</p>
+              <p class="mb-2"><i class="bi bi-envelope me-2 text-info"></i> BOBUR@MAIL.RU</p>
+            </div>
+          </div>
+        </div>
+
+       <div class="col-lg-3 col-md-6 footer-links">
+  <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Bo'limlar</h4>
+  <ul class="list-unstyled">
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Ritm buzilishi</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Kolopraktalogiya</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Ko'z mikroxirurgiyasi</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Umumiy terapiya</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Ginekologiya</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Neyroxirurgiya</a></li>
+  </ul>
+</div>
+
+<div class="col-lg-3 col-md-6 footer-links">
+  <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Tez havolalar</h4>
+  <ul class="list-unstyled">
+    <li class="mb-2"><a href="{% url 'markaz_haqida' %}" class="text-white-50 text-decoration-none">Markaz haqida</a></li>
+    <li class="mb-2"><a href="{% url 'services_list' %}" class="text-white-50 text-decoration-none">Xizmatlar</a></li>
+    <li class="mb-2"><a href="{% url 'doctors_list' %}" class="text-white-50 text-decoration-none">Xodimlar</a></li>
+    <li class="mb-2"><a href="{% url 'departments_page' %}" class="text-white-50 text-decoration-none">Bo'limlar</a></li>
+    <li class="mb-2"><a href="{% url 'price_list' %}" class="text-white-50 text-decoration-none">Narxlar </a></li>
+    <li class="mb-2"><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Bog'lanish</a></li>
+  </ul>
+</div>
+
+        <div class="col-lg-3 col-md-6">
+          <h4 class="text-white border-bottom border-info border-3 d-inline-block mb-4 pb-1">Ish vaqti</h4>
+          <ul class="list-unstyled text-white-50">
+            <li class="mb-2">Dush - Sesh: <span class="text-white">9.00 - 17.00</span></li>
+            <li class="mb-2">Chor - Pay: <span class="text-white">9.00 - 17.00</span></li>
+            <li class="mb-2">Juma - Shan: <span class="text-white">9.00 - 17.00</span></li>
+            <li class="mb-2">Shanba: <span class="text-white">9.00 - 16.00</span></li>
+            <li class="mb-2">Yakshanba: <span class="text-info fw-bold">Yopiq</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-newsletter mt-5 py-4" style="background-color: #1f2341;">
+      <div class="container text-center">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-lg-12 text-white">
+            <strong class="me-3">Ijtimoiy tarmoqlar:</strong>
+            <a href="https://t.me/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-telegram"></i></a>
+            <a href="https://instagram.com/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-instagram"></i></a>
+            <a href="https://facebook.com/boburdoktor" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.youtube.com/@DoctorBobur" target="_blank" class="text-white ms-3 fs-4"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom py-3 text-center text-white-50" style="background-color: #1f2341; font-size: 13px;">
+      <div class="container border-top border-secondary pt-3">
+        Mualliflik huquqi @ 2026 Bobur Doktor Shifo tibbiyot markazi. Barcha huquqlar himoyalangan. <strong>RamilIT</strong>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center" style="background-color: #00a0e3;"><i class="bi bi-arrow-up-short text-white"></i></a>
+
+  <div id="preloader"></div>
+
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+</html>

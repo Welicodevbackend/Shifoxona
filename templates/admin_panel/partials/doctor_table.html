@@ -1,0 +1,41 @@
+{% for doctor in doctors %}
+<tr>
+    <td class="ps-4">
+        <a href="{% url 'doctor_detail_dashboard' doctor.id %}" class="text-decoration-none fw-bold text-primary">
+            {{ doctor.id }}
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'doctor_detail_dashboard' doctor.id %}">
+            <img src="{{ doctor.photo.url }}" class="rounded-circle border" alt="{{ doctor.full_name }}" 
+                 style="width: 40px; height: 40px; object-fit: cover;">
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'doctor_detail_dashboard' doctor.id %}" class="text-decoration-none fw-bold text-dark">
+            {{ doctor.full_name }}
+        </a>
+    </td>
+    <td>
+        <span class="text-muted small fw-semibold">
+            {{ doctor.doctor_details.specialization|default:"Mutaxassislik yo'q" }}
+        </span>
+    </td>
+    <td>
+        <span class="badge bg-light text-dark border">{{ doctor.department.name|default:"Bo'limsiz" }}</span>
+    </td>
+    <td>
+        <span class="small text-muted"><i class="fas fa-phone me-1"></i> {{ doctor.phone }}</span>
+    </td>
+    <td class="text-end pe-4">
+        <a href="{% url 'doctor_detail_dashboard' doctor.id %}" class="action-view" 
+           style="color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 8px; display: inline-block;">
+            <i class="fas fa-eye"></i>
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="text-center py-5 text-muted">Shifokorlar topilmadi.</td>
+</tr>
+{% endfor %}

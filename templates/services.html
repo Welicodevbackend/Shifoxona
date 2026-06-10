@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Xizmatlar - BOBUR DOKTOR SHIFO{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<style>
+    /* Choices.js konteynerining pastki masofasini nolga tushirish */
+    .choices {
+        margin-bottom: 0 !important;
+    }
+
+    /* Barcha input va selectlar balandligini bir xil qilish */
+    .sidebar-card .form-control,
+    .sidebar-card .choices__inner {
+        min-height: 48px !important;
+        background-color: white !important;
+        border: none !important;
+    }
+
+    /* Textarea uchun maxsus */
+    .sidebar-card textarea.form-control {
+        padding: 12px !important;
+    }
+
+    /* Input focus holati */
+    .sidebar-card .form-control:focus {
+        box-shadow: 0 0 0 0.25 red.rem rgba(255,255,255,0.25);
+    }
+</style>
+<style>
+    /* Tanlash maydonini kodingizga moslash */
+    .choices__inner {
+        background-color: white !important;
+        border: none !important; /* border-0 klassingiz uchun */
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+        min-height: 48px !important;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Menyu ochilganda u doimo ustida turishi uchun */
+    .choices__list--dropdown {
+        z-index: 1050 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Qidiruv maydoni */
+    .choices__input {
+        background-color: #f8f9fa !important;
+        border-radius: 4px !important;
+    }
+</style>
+<style>
+  /* 1. Page Header */
+  /*.page-header {*/
+  /*  background: linear-gradient(rgba(10, 15, 45, 0.8), rgba(10, 15, 45, 0.8)), url("{% static 'assets/img/ssss.jpg' %}");*/
+  /*  background-size: cover;*/
+  /*  background-position: center;*/
+  /*  padding: 250px 0 50px;*/
+  /*  color: #fff;*/
+  /*  margin-top: -95px;*/
+  /*  border-bottom: 5px solid #00a0e3;*/
+  /*}*/
+  .page-title {
+    background-size: cover;
+    padding: 150px 0 30px 0; /* Paddingni biroz oshirdik */
+    position: relative;
+    margin-top: 0; /* Mana shu joyini 0 qilib ko'r */
+}
+
+  /* 2. Sidebar Dizayni */
+  .sticky-sidebar { position: sticky; top: 100px; }
+  .sidebar-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 25px;
+    border: 1px solid #eee;
+  }
+  .sidebar-header {
+    background: #0d6efd;
+    color: white;
+    padding: 16px 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+  }
+  .service-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid #f8f8f8;
+    transition: 0.3s;
+  }
+  .service-nav-link:hover, .service-nav-link.active {
+    background: #f0f7ff;
+    color: #0d6efd;
+    border-left: 5px solid #0d6efd;
+  }
+
+  /* 3. Ish vaqti */
+  .qabul-kunlari {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+  }
+  .qabul-title { font-weight: 800; color: #2c3155; margin-bottom: 20px; display: flex; align-items: center; }
+  .qabul-title i { background: #00bcd4; color: white; padding: 5px 8px; border-radius: 6px; margin-right: 10px; }
+  .day-row { display: flex; justify-content: space-between; padding: 8px 0; font-weight: 600; font-size: 0.9rem; border-bottom: 1px dashed #eee; }
+  .day-name { color: #555; }
+  .day-time { color: #00bcd4; }
+  .day-row.off { color: #dc3545; border-bottom: none; }
+  .day-row.off .badge { background: #dc3545; color: white; padding: 4px 10px; border-radius: 4px; }
+
+  /* 4. Asosiy Content */
+  .content-main-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.03);
+    margin-bottom: 40px;
+  }
+  .service-img { width: 100%; height: auto; max-height: 450px; object-fit: cover; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+  .service-title { font-size: 2.6rem; font-weight: 800; color: #1a237e; margin-bottom: 25px; border-left: 8px solid #0d6efd; padding-left: 20px; }
+  .service-description { color: #444; font-size: 1.15rem; line-height: 1.9; text-align: justify; word-spacing: 1px; }
+  .price-strip { margin-top: 40px; padding: 25px; background: #f8faff; border-radius: 12px; border: 1px solid #e1e8f5; display: flex; justify-content: space-between; align-items: center; }
+  .price-tag { font-size: 1.8rem; font-weight: 800; color: #0d6efd; }
+
+  /* 5. Shifokorlar kartochkasi dizayni */
+  .doctor-card-hover { transition: all 0.3s ease; border: none !important; }
+  .doctor-card-hover:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 45px rgba(0, 160, 227, 0.15) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main">
+  link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/js/choices.min.js"></script>
+
+<!--  <section class="page-header text-center">-->
+<!--    <div class="container">-->
+<!--      <h1 class="fw-bold">Xizmatlar va Narxlar</h1>-->
+<!--      <p class="text-white-50">Bosh sahifa / Xizmatlar</p>-->
+<!--    </div>-->
+<!--  </section>-->
+  {% static 'assets/img/ssss.jpg' as bg_url %}
+  <div class="page-title" style="background: url('{{ bg_url }}') center 25% no-repeat; background-size: cover;  position: relative;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;padding: 150px 0 30px 0; background: rgba(0,0,0,0.4);"></div>
+
+    <div class="container text-center" style="position: relative; z-index: 8;">
+      <h1 class="text-white fw-bold display-4">Xizmatlar va Narxlar</h1>
+
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+          <li class="breadcrumb-item">
+            <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+          </li>
+          <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+            Xizmatlar
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="py-5 bg-light">
+    <div class="container-fluid px-lg-5">
+      <div class="row g-4">
+
+        <div class="col-lg-3">
+          <div class="sticky-sidebar">
+            <div class="sidebar-card">
+              <div class="sidebar-header"><i class="bi bi-grid-fill me-2"></i> KATEGORIYA</div>
+              <div class="nav flex-column" role="tablist">
+                {% for service in services %}
+                <a class="service-nav-link {% if forloop.first %}active{% endif %}"
+                   data-bs-toggle="pill" href="#service-{{ service.id }}">
+                  {{ service.name }}
+                  <i class="bi bi-chevron-right small"></i>
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="qabul-kunlari">
+              <div class="qabul-title"><i class="bi bi-calendar-check"></i> Qabul kunlari</div>
+              <div class="day-row"><span class="day-name">Dushanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="day-row"><span class="day-name">Seshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="day-row"><span class="day-name">Chorshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="day-row"><span class="day-name">Payshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="day-row"><span class="day-name">Juma</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="day-row"><span class="day-name">Shanba</span> <span class="day-time">9:00 - 15:00</span></div>
+              <div class="day-row off"><span class="day-name">Yakshanba</span> <span class="badge">Yopiq</span></div>
+            </div>
+
+
+
+           <div class="sidebar-card mt-4 p-4" style="background: #00a0e3; border: none; border-radius: 12px;">
+    <h5 class="text-white fw-bold mb-4"><i class="bi bi-clock-fill me-2"></i> Navbat Olish</h5>
+    <form action="{% url 'book_appointment' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="patient_name" class="form-control mb-3 border-0" placeholder="Ismingiz *" required style="border-radius: 8px; padding: 12px;">
+
+        <input type="text" name="patient_phone" class="form-control mb-3 border-0" placeholder="Telefon *" required style="border-radius: 8px; padding: 12px;">
+
+        <div class="mb-3">
+            <select name="department" id="sidebarDepartmentSelect" class="form-select border-0" required>
+                <option value="" selected disabled>Bo'limni tanlang</option>
+                {% for dept in departments %}
+                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <select name="doctor" id="sidebarDoctorSelect" class="form-select border-0" required disabled style="border-radius: 8px; padding: 12px;">
+                <option value="" selected disabled>Shifokorni tanlang *</option>
+            </select>
+        </div>
+
+        <input type="date" name="date" id="sidebarDateInput" class="form-control mb-3 border-0" required style="border-radius: 8px; padding: 12px;">
+
+        <div class="mb-3">
+            <select name="time_slot" id="sidebarTimeSelect" class="form-select border-0" required disabled style="border-radius: 8px; padding: 12px;">
+                <option value="" selected disabled>Vaqtni tanlang *</option>
+            </select>
+        </div>
+
+        <textarea name="notes" class="form-control mb-3 border-0" placeholder="Shikoyatingiz yoki qo'shimcha eslatma (ixtiyoriy)" rows="3" style="border-radius: 8px;"></textarea>
+
+        <button type="submit" class="btn btn-light w-100 fw-bold text-primary py-3" style="border-radius: 8px; letter-spacing: 1px;">TASDIQLASH</button>
+    </form>
+</div>
+          </div>
+        </div>
+
+        <div class="col-lg-9">
+          <div class="tab-content pt-0">
+            {% for service in services %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="service-{{ service.id }}">
+
+              <div class="content-main-card">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="service-img" alt="{{ service.name }}">
+                {% else %}
+                <img src="{% static 'assets/img/service-default.jpg' %}" class="service-img" alt="Default">
+                {% endif %}
+
+                <h2 class="service-title">{{ service.name }}</h2>
+
+                <div class="service-description">
+                  {% if service.description %}
+                    {{ service.description|safe }}
+                  {% else %}
+                    <p>Ushbu tibbiy yo'nalish bo'yicha ma'lumotlar yaqin orada yangilanadi.</p>
+                  {% endif %}
+                </div>
+
+                <div class="price-strip">
+                  <span class="fw-bold text-muted">Xizmat narxi:</span>
+                  <div class="price-tag">{{ service.price|floatformat:0 }} so'm</div>
+                </div>
+              </div>
+
+              <div class="mt-5 pt-4">
+                <div class="d-flex align-items-center mb-4">
+                  <h3 class="fw-bold text-dark m-0" style="border-left: 6px solid #00a0e3; padding-left: 20px;">
+                    Bizning malakali mutaxasislarimiz.
+                  </h3>
+                </div>
+
+                <div class="row g-4">
+  {% for staff in random_doctors %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100 shadow-sm rounded-4 overflow-hidden doctor-card-hover">
+        <div class="position-relative">
+          {% if staff.photo %}
+            <img src="{{ staff.photo.url }}" class="card-img-top" style="height: 300px; object-fit: cover; object-position: top;">
+          {% else %}
+            <img src="{% static 'assets/img/default-doctor.jpg' %}" class="card-img-top" style="height: 300px; object-fit: cover;">
+          {% endif %}
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);"></div>
+        </div>
+
+        <div class="card-body p-4 text-center">
+          <h5 class="fw-bold mb-1" style="color: #2c3155;">{{ staff.full_name }}</h5>
+          <p class="text-info fw-bold mb-3 small">
+            {% if staff.doctor_details %}
+              {{ staff.doctor_details.specialization|upper }}
+            {% else %}
+              MUTAXASSIS
+            {% endif %}
+          </p>
+          <a href="{% url 'doctor_detail' staff.pk %}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" style="background: #00a0e3; border: none;">
+    Batafsil ko'rish
+</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <p class="text-muted italic text-center">Hozircha mutaxassislar haqida ma'lumot mavjud emas.</p>
+    </div>
+  {% endfor %}
+</div>
+              </div>
+
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const element = document.getElementById('sidebarDepartmentSelect');
+    const choices = new Choices(element, {
+        searchEnabled: true,          // Qidiruvni yoqish
+        itemSelectText: '',           // "Press to select" yozuvini olib tashlash
+        position: 'bottom',           // DOIMO PASGA QARAB OCHILADI
+        shouldSort: false,            // Alifbo tartibida aralashtirib yubormaslik
+        noResultsText: 'Bo\'lim topilmadi',
+        placeholder: true,
+        placeholderValue: 'Bo\'limni tanlang',
+    });
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deptSelect = document.getElementById('sidebarDepartmentSelect');
+    const doctorSelect = document.getElementById('sidebarDoctorSelect');
+    const dateInput = document.getElementById('sidebarDateInput');
+    const timeSelect = document.getElementById('sidebarTimeSelect');
+
+    // 1. BO'LIM O'ZGARSA: SHIFOKORLARNI YUKLASH
+    deptSelect.addEventListener('change', function() {
+        const deptId = this.value;
+        doctorSelect.innerHTML = '<option value="" selected disabled>Yuklanmoqda...</option>';
+        doctorSelect.disabled = false;
+        dateInput.value = '';
+        dateInput.disabled = true;
+        timeSelect.innerHTML = '<option value="" selected disabled>Vaqtni tanlang *</option>';
+        timeSelect.disabled = true;
+
+        fetch(`/get-doctors-by-dept/?dept_id=${deptId}`)
+            .then(res => res.json())
+            .then(data => {
+                doctorSelect.innerHTML = '<option value="" selected disabled>Shifokorni tanlang *</option>';
+                data.doctors.forEach(dr => {
+                    doctorSelect.innerHTML += `<option value="${dr.id}">${dr.full_name}</option>`;
+                });
+            });
+    });
+
+    // 2. SHIFOKOR TANLANSA: SANANI OCHISH
+    doctorSelect.addEventListener('change', function() {
+        if(this.value) {
+            dateInput.disabled = false;
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+
+            const formatDate = (date) => {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            };
+            dateInput.min = formatDate(today);
+            dateInput.max = formatDate(maxDate);
+        }
+    });
+
+    // 3. SANA TANLANSA: SLOTLARNI YUKLASH
+    dateInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        if (selectedDate.getUTCDay() === 0) {
+            this.value = '';
+            Swal.fire({ icon: 'warning', title: 'Dam olish kuni', text: 'Yakshanba kuni qabul mavjud emas.', confirmButtonColor: '#00a0e3' });
+            return;
+        }
+
+        const doctorId = doctorSelect.value;
+        const date = this.value;
+
+        if (doctorId && date) {
+            timeSelect.disabled = false;
+            timeSelect.innerHTML = '<option value="" selected disabled>Yuklanmoqda...</option>';
+
+            // URLni tekshiring: /get-available-slots/ yoki /api/available-slots/
+            fetch(`/api/available-slots/?doctor=${doctorId}&date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    timeSelect.innerHTML = '<option value="" selected disabled>Vaqtni tanlang *</option>';
+                    if (data.available_slots && data.available_slots.length > 0) {
+                        data.available_slots.forEach(slot => {
+                            timeSelect.innerHTML += `<option value="${slot}">${slot}</option>`;
+                        });
+                    } else {
+                        timeSelect.innerHTML = '<option value="" disabled>Bo‘sh vaqt qolmadi</option>';
+                    }
+                });
+        }
+    });
+});
+
+// SUCCESS/ERROR MESSAGES
+{% if messages %}
+    {% for message in messages %}
+        (function() {
+            let msg = "{{ message|safe }}";
+            if (msg.startsWith("SUCCESS|")) {
+                let p = msg.split("|");
+                Swal.fire({
+                    title: 'Navbat tasdiqlandi!',
+                    icon: 'success',
+                    html: `<div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 2px dashed #00a0e3;">
+                            <p><b>Bemor:</b> ${p[1]}</p>
+                            <p><b>Yo'nalish:</b> ${p[2]}</p>
+                            <p><b>Shifokor:</b> ${p[3]}</p>
+                            <p><b>Sana:</b> ${p[4]}</p>
+                            <p><b>Vaqt:</b> ${p[5]}</p>
+                        </div>`,
+                    confirmButtonColor: '#00a0e3'
+                });
+            } else if (msg.startsWith("XATO|")) {
+                Swal.fire({ icon: 'error', title: 'Xatolik!', text: msg.split("|")[1] });
+            }
+        })();
+    {% endfor %}
+{% endif %}
+</script>
+</main>
+{% endblock %}

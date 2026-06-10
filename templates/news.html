@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% static 'assets/img/ssss.jpg' as bg_url %}
+
+<section class="page-header d-flex align-items-center" style="background: url('{{ bg_url }}') center 25% no-repeat; background-size: cover;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1;"></div>
+
+    <div class="container text-center" style="position: relative; z-index: 2;">
+        <div class="header-caption animate__animated animate__fadeInUp">
+            <h1 class="fw-black text-white mb-3 text-uppercase">Yangiliklar</h1>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+                    </li>
+                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+                        Yangiliklar ro'yxati
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<section class="news-list-section py-5 bg-light">
+    <div class="custom-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    {% for item in news %}
+                    <div class="col-md-6">
+                        <div class="news-card-modern shadow-sm h-100">
+                            <div class="card-img-wrapper">
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                                <div class="date-badge">{{ item.created_at|date:"d.m.Y" }}</div>
+                            </div>
+                            <div class="card-body-custom p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <a href="{% url 'news_detail' item.pk %}" class="text-dark text-decoration-none hover-blue">
+                                        {{ item.title|truncatechars:60 }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-4">{{ item.summary|truncatechars:120 }}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'news_detail' item.pk %}" class="btn-read-more">
+                                        Batafsil <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                    <span class="text-muted extra-small"><i class="bi bi-eye"></i> {{ item.views_count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <h4 class="text-muted">Hozircha yangiliklar yo'q.</h4>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="sticky-sidebar-wrapper mt-4 mt-lg-0">
+
+                    <div class="sidebar-card mb-4">
+                        <h5 class="sidebar-title text-uppercase">Qidiruv</h5>
+                        <div class="search-box-modern mt-3">
+                            <div class="input-group">
+                                <input type="text" id="dept-search-input" class="form-control border-0 bg-light" placeholder="Yangilikni qidiring...">
+                                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-info"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="category-sidebar-modern mb-4">
+                        <h5 class="sidebar-title text-uppercase px-4 mb-3">Bo'limlar</h5>
+                        <div id="departments-list">
+                            {% for dept in departments %}
+                            <a href="{% url 'departments_page' %}?dept={{ dept.id }}" class="dept-link-modern dept-search-item">
+                                <span class="dept-name-text">{{ dept.name }}</span>
+                                <span class="badge rounded-pill bg-light text-info border">59</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h5 class="sidebar-title text-uppercase mb-4">So'nggi xabarlar</h5>
+                        {% for recent in recent_news %}
+                        <div class="recent-news-item d-flex align-items-center mb-3">
+                            <img src="{{ recent.image.url }}" class="rounded shadow-sm" style="width: 70px; height: 55px; object-fit: cover;">
+                            <div class="ms-3">
+                                <h6 class="mb-0 extra-small fw-bold">
+                                    <a href="{% url 'news_detail' recent.pk %}" class="text-dark text-decoration-none hover-blue">{{ recent.title|truncatechars:45 }}</a>
+                                </h6>
+                                <span class="text-info" style="font-size: 10px;"><i class="bi bi-calendar-event me-1"></i>{{ recent.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+  .page-header {
+  background-size: cover;
+  background-position: center 25%;
+  position: relative;
+  padding: 170px 0 40px 0; /* Namunadagi masofalar */
+  margin-top: 0px;
+  border-bottom: 8px solid #00a0e3;
+  overflow: hidden;
+}
+
+.page-header h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Breadcrumb uchun qo'shimcha stil */
+.custom-breadcrumb .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-decoration: none;
+}
+
+  .custom-container { width: 100%; padding: 0 4%; margin: 0 auto; }
+
+  /* 2. Yangilik Kartalari Dizayni */
+  .news-card-modern {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: 0.4s;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card-modern:hover { transform: translateY(-10px); }
+
+  .card-img-wrapper { position: relative; height: 220px; overflow: hidden; }
+  .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+  .news-card-modern:hover .card-img-wrapper img { transform: scale(1.1); }
+
+  .date-badge {
+    position: absolute; top: 15px; left: 15px;
+    background: #00a0e3; color: #fff;
+    padding: 5px 15px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;
+  }
+
+  .btn-read-more { color: #00a0e3; text-decoration: none; font-weight: 700; font-size: 0.9rem; }
+
+  /* 3. Sidebar Dizayni */
+  .sticky-sidebar-wrapper { position: sticky; top: 120px; }
+  .sidebar-card, .category-sidebar-modern { background: #fff; border-radius: 20px; padding: 25px; border: 1px solid #eee; }
+  .category-sidebar-modern { padding-left: 0; padding-right: 0; }
+
+  .sidebar-title {
+    color: #1e2332; font-weight: 800; border-left: 5px solid #00a0e3; padding-left: 15px; font-size: 1.1rem;
+  }
+
+  .dept-link-modern {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 25px; color: #555; text-decoration: none; font-weight: 600;
+    transition: 0.3s; border-bottom: 1px solid #f8f9fa;
+  }
+  .dept-link-modern:hover { background: #f0f7ff; color: #00a0e3; padding-left: 30px; }
+
+  .hover-blue:hover { color: #00a0e3 !important; }
+  .extra-small { font-size: 0.85rem; }
+</style>
+
+<script>
+document.getElementById('dept-search-input').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let items = document.querySelectorAll('.dept-search-item');
+    items.forEach(function(item) {
+        let title = item.innerText.toLowerCase();
+        item.style.display = title.includes(filter) ? "flex" : "none";
+    });
+});
+</script>
+
+<script>
+document.querySelectorAll('.hover-blue').forEach(link => {
+    link.addEventListener('click', function(e) {
+        // Link yaqinidagi ko'rishlar soni yozilgan span'ni topamiz
+        let viewSpan = this.closest('.card-body-custom').querySelector('.bi-eye').nextSibling;
+        let currentViews = parseInt(viewSpan.textContent);
+        // Raqamni shunchaki ekranda oshirib qo'yamiz
+        viewSpan.textContent = " " + (currentViews + 1);
+    });
+});
+</script>
+
+<script>
+    // Agar foydalanuvchi "Back" tugmasi bilan qaytsa, sahifani yangilash
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2)) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

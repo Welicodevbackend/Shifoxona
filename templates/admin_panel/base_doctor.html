@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Doctor Panel | Bobur Doktor Shifo{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Telegram kabi yangi xabar kelganda silkitalish */
+    .badge-shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        transform: translate3d(0, 0, 0);
+    }
+
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+        40%, 60% { transform: translate3d(3px, 0, 0); }
+    }
+</style>
+    <style>
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: #f8fafb; }
+        #sidebar { min-width: 280px; max-width: 280px; min-height: 100vh; background: #1e293b; color: #fff; transition: all 0.3s; position: sticky; top: 0; }
+        #sidebar .sidebar-header { padding: 30px 20px; background: #0f172a; text-align: center; border-bottom: 1px solid #334155; }
+        #sidebar .sidebar-header h4 { font-weight: 800; color: #38bdf8; margin-bottom: 0; letter-spacing: 1px; }
+
+        #sidebar ul li a {
+            padding: 14px 25px;
+            font-size: 0.95rem;
+            display: block;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+            border-left: 5px solid transparent;
+        }
+
+        #sidebar ul li a:hover { color: #f8fafc; background: #334155; border-left: 5px solid #38bdf8; }
+        #sidebar ul li.active > a { color: #fff; background: #334155; border-left: 5px solid #38bdf8; font-weight: 600; }
+
+        .content-area { width: 100%; padding: 30px; }
+        .navbar { border: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important; border-radius: 15px !important; }
+        hr.sidebar-divider { border-top: 1px solid rgba(255,255,255,0.08); margin: 15px 25px; }
+        .badge-navbat { font-size: 0.75rem; padding: 5px 10px; }
+        .status-online { height: 10px; width: 10px; background-color: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h4>BDS DOCTOR</h4>
+            <small class="text-info">Tibbiy boshqaruv tizimi</small>
+        </div>
+
+        <ul class="list-unstyled components mt-4">
+            <li class="{% if request.resolver_match.url_name == 'doctor_admin_dashboard' %}active{% endif %}">
+                <a href="{% url 'doctor_admin_dashboard' %}">
+                    <i class="fas fa-chart-pie me-2"></i> Ish stoli (Statistika)
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+            <small class="text-uppercase px-4 mb-2 d-block" style="font-size: 0.7rem; color: #64748b;">Amaliyot</small>
+
+           <li class="{% if request.resolver_match.url_name == 'doctor_my_appointments' %}active{% endif %}">
+    <a href="{% url 'doctor_my_appointments' %}" class="d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-user-clock me-2"></i> Mening navbatlarim</span>
+
+        <span id="navbat-count" class="badge rounded-pill bg-danger border border-light"
+              style="font-size: 11px; min-width: 20px; height: 20px; display: {% if today_my_apps_count > 0 %}flex{% else %}none{% endif %};
+                     align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            {{ today_my_apps_count }}
+        </span>
+    </a>
+</li>
+
+<!--            <li class="{% if request.resolver_match.url_name == 'patients_list_dashboard' %}active{% endif %}">-->
+<!--                <a href="{% url 'doctor_patients_list_dashboard' %}">-->
+<!--                    <i class="fas fa-hospital-user me-2"></i> Bemorlarim-->
+<!--                </a>-->
+<!--            </li>-->
+
+            <li class="{% if request.resolver_match.url_name == 'doctor_medical_records_list' %}active{% endif %}">
+    <a href="{% url 'doctor_medical_records_list' %}">
+        <i class="fas fa-file-prescription me-2"></i> Tibbiy Kartalar
+    </a>
+</li>
+
+            <hr class="sidebar-divider">
+            <small class="text-uppercase px-4 mb-2 d-block" style="font-size: 0.7rem; color: #64748b;">Ma'lumotnoma</small>
+
+            <li class="{% if request.resolver_match.url_name == 'doctor_departments_list' %}active{% endif %}">
+                <a href="{% url 'doctor_departments_list' %}">
+                    <i class="fas fa-layer-group me-2"></i> Bo'limlar
+                </a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'doctor_services_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'doctor_services_list_dashboard' %}">
+                    <i class="fas fa-hand-holding-medical me-2"></i> Xizmatlar
+                </a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'doctor_lab_tests_list_dashboard' %}active{% endif %}">
+                <a href="{% url 'doctor_lab_tests_list_dashboard' %}">
+                    <i class="fas fa-microscope me-2"></i> Laboratoriya
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content-area">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 p-3">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center">
+                    <span class="status-online"></span>
+                    <span class="fw-bold text-secondary">Shifokor nazorat paneli</span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <div class="me-3 text-end">
+                        <span class="d-block small text-muted">Dr. {{ request.user.staff_profile.full_name|default:request.user.username }}</span>
+                        <span class="badge bg-soft-info text-primary" style="background: #e0f2fe; font-size: 11px;">
+                            {{ request.user.staff_profile.department.name|default:"Mutaxassis" }}
+                        </span>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-circle shadow-sm" type="button" id="doctorDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 45px; height: 45px;">
+                            <i class="fas fa-user-md text-primary"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="doctorDropdown">
+                            <li><a class="dropdown-item py-2" href="{% url 'doctor_admin_profile_edit' %}"><i class="fas fa-user-circle me-2 text-muted"></i> Shaxsiy ma'lumotlar</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'doctor_admin_security_edit' %}"><i class="fas fa-shield-alt me-2 text-muted"></i> Xavfsizlik</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="px-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                        <i class="fas fa-power-off me-2"></i> Tizimdan chiqish
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="animate-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+<script>
+    let lastCount = -1;
+
+    function checkNewAppointments() {
+        // urls.py dagi name='check_new_appointments' ga mos kelishi kerak
+        fetch("{% url 'check_new_appointments' %}")
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('navbat-count');
+                if (!badge) return;
+
+                // Faqat soni o'zgargandagina DOM ga tegadi (miltillash to'xtaydi)
+                if (data.count !== lastCount) {
+                    if (data.count > 0) {
+                        badge.innerText = data.count;
+                        badge.style.setProperty('display', 'flex', 'important');
+
+                        if (lastCount !== -1 && data.count > lastCount) {
+                            badge.classList.add('badge-shake');
+                            setTimeout(() => badge.classList.remove('badge-shake'), 1000);
+                        }
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    lastCount = data.count;
+                }
+            })
+            .catch(err => console.error("Xato:", err));
+    }
+
+    setInterval(checkNewAppointments, 10000);
+    // Sahifa ochilishi bilan bir marta ishlatib yuboramiz
+    document.addEventListener('DOMContentLoaded', checkNewAppointments);
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let inactiveInterval;
+    let secondsCounter = 0;
+    const maxInactiveSeconds = 60; // 1 daqiqa
+
+    function startTimer() {
+        // Agar taymer allaqachon ishlayotgan bo'lsa, uni to'xtatamiz
+        clearInterval(inactiveInterval);
+
+        inactiveInterval = setInterval(function() {
+            secondsCounter++;
+            console.log("Sahifa nofaol: " + secondsCounter + " soniya");
+
+            if (secondsCounter >= maxInactiveSeconds) {
+                console.log("Vaqt tugadi! Login sahifasiga yo'naltirilmoqda...");
+                window.location.href = "{% url 'doctor_dashboard_login' %}";
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(inactiveInterval);
+        secondsCounter = 0;
+        console.log("Shifokor qaytdi, taymer nolga tushirildi.");
+    }
+
+    // Sahifa ko'rinishi o'zgarganda (boshqa tabga o'tganda)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Shifokor boshqa tabga yoki brauzerga o'tib ketti
+            startTimer();
+        } else {
+            // Shifokor ushbu tabga qaytib keldi
+            stopTimer();
+        }
+    });
+
+    // Sahifa yuklanganda holatni tekshirish
+    if (document.hidden) {
+        startTimer();
+    }
+</script>
+</body>
+</html>

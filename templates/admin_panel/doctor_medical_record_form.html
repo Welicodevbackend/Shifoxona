@@ -1,0 +1,67 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block title %}
+    {% if record %}Tahrirlash{% else %}Yangi Karta{% endif %} | BDS Doctor
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <a href="{% url 'doctor_medical_records_list' %}" class="btn btn-link text-muted mb-3 p-0 text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i> Ro'yxatga qaytish
+            </a>
+
+            <div class="card shadow-sm border-0" style="border-radius: 20px;">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold text-dark mb-4">
+                        {% if record %}
+                            <i class="fas fa-edit text-primary me-2"></i> Kartani tahrirlash
+                        {% else %}
+                            <i class="fas fa-file-medical text-primary me-2"></i> Yangi Tibbiy Karta
+                        {% endif %}
+                    </h3>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Bemor</label>
+                            {% if record %}
+                                <div class="form-control bg-light py-3 fw-bold border-0">{{ record.patient.full_name }}</div>
+                            {% else %}
+                                <select name="patient" class="form-select py-3 border-2 border-light" required style="border-radius: 12px; background-color: #f8fafc;">
+                                    <option value="" disabled selected>Bemorni tanlang...</option>
+                                    {% for p in patients %}
+                                        <option value="{{ p.id }}">{{ p.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Tashxis (Diagnosis)</label>
+                            <textarea name="diagnosis" class="form-control border-2 border-light" rows="3" 
+                                      placeholder="Kasallik nomini va qisqacha holatni yozing..." 
+                                      style="border-radius: 12px; background-color: #f8fafc;" required>{{ record.diagnosis }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Muolaja va Retsept (Prescription)</label>
+                            <textarea name="prescription" class="form-control border-2 border-light" rows="6" 
+                                      placeholder="Dori-darmonlar, dozalar va tavsiyalar..." 
+                                      style="border-radius: 12px; background-color: #f8fafc;" required>{{ record.prescription }}</textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary py-3 fw-bold" style="border-radius: 12px;">
+                                <i class="fas fa-save me-2"></i> Ma'lumotlarni saqlash
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

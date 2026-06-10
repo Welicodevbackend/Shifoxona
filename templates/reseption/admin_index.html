@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BDS SHIFO — Bobur Doktor Shifo klinikasi boshqaruv tizimi. BMI loyihasi.">
+  <meta name="keywords" content="klinika, tibbiyot, navbat, shifokor, bds shifo">
+  <meta name="author" content="Abdurauf Islomjonov">
+  <meta property="og:title" content="BDS SHIFO — Reseption Paneli">
+  <meta property="og:description" content="Klinika ish jarayonini avtomatlashtirilgan boshqaruv tizimi.">
+  <meta property="og:type" content="website">
+  <title>BDS SHIFO — Reseption Paneli</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'assets/css/templatemo-frost-style.css' %}">
+</head>
+<body>
+
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+    <div class="hamburger__lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </button>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo">BDS<span>+</span>SHIFO</div>
+      <div class="sidebar__tagline">Bobur Doktor Shifo</div>
+    </div>
+
+    <nav class="sidebar__nav">
+      <ul>
+        <li>
+          <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+            <span class="nav-icon">&#9678;</span> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'department-list' %}">
+            <span class="nav-icon">&#127981;</span> Departments
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'service-list' %}">
+            <span class="nav-icon">&#9738;</span> Services
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'staff-list' %}">
+            <span class="nav-icon">&#10047;</span> Staff (Doctors)
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'patient-list' %}">
+            <span class="nav-icon">&#9733;</span> Patients
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'labtest-list' %}">
+            <span class="nav-icon">&#128300;</span> Lab Tests
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'online-appointment-list' %}">
+            <span class="nav-icon">&#127760;</span> Online Appointments
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'appointment-list' %}">
+            <span class="nav-icon">&#10053;</span> Appointments
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'medical-record-list' %}">
+            <span class="nav-icon">&#128203;</span> Medical Records
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'payment-list' %}">
+            <span class="nav-icon">&#10084;</span> Payments
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'contact-message-list' %}">
+            <span class="nav-icon">&#128233;</span> Contact Messages
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar__hours">
+        <strong>Ish vaqti</strong><br>
+        Dush – Juma: 08:00 – 18:00<br>
+        Shan – Yak: 09:00 – 16:00
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero" id="hero">
+      <div class="hero__content">
+        <div class="hero__badge reveal">Tizim Faol</div>
+        <h1 class="hero__title reveal reveal-delay-1">
+          Sog'liq uchun<br><em>to'g'ri tanlov.</em>
+        </h1>
+        <p class="hero__subtitle reveal reveal-delay-2">
+          "BOBUR DOKTOR SHIFO" klinikasining barcha xizmatlarini, navbatlarini va hisob-kitoblarini boshqarish tizimi.
+        </p>
+        <div class="hero__actions reveal reveal-delay-3">
+          <a href="{% url 'staff-list' %}" class="btn btn--primary">Shifokorlar</a>
+          <a href="{% url 'service-list' %}" class="btn btn--outline">Xizmatlar Narxi</a>
+        </div>
+      </div>
+      <div class="hero__deco" aria-hidden="true" style="display: flex; gap: 10px; align-items: flex-end;">
+        <div class="scoop" style="background: #00d4ff; height: 100px; width: 100px; border-radius: 50%;"></div>
+        <div class="scoop" style="background: #1a2a3a; height: 150px; width: 150px; border-radius: 50%;"></div>
+        <div class="scoop" style="background: #7ab55c; height: 80px; width: 80px; border-radius: 50%;"></div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="catering">
+      <div class="section__header reveal">
+        <span class="section__label">Tibbiy Xizmatlar</span>
+        <h2 class="section__title">Siz uchun eng yaxshi xizmatlar</h2>
+        <p class="section__desc">Klinikamizda barcha turdagi diagnostika va davolash muolajalari yuqori sifatda amalga oshiriladi.</p>
+      </div>
+      <div class="catering__grid">
+        <div class="cart-card reveal">
+          <div class="cart-card__visual">
+            <img src="{% static 'images/consultation.avif' %}" alt="Shifokor ko'rigi" loading="lazy">
+            <span class="cart-card__visual-label">Umumiy</span>
+          </div>
+          <div class="cart-card__body">
+            <h3 class="cart-card__name">Mutaxassis ko'rigi</h3>
+            <p class="cart-card__desc">Tajribali shifokorlar tomonidan professional maslahat va diagnostika xizmatlari.</p>
+            <div class="cart-card__details">
+              <span class="cart-card__detail">30 daqiqa</span>
+              <span class="cart-card__detail">To'liq analiz</span>
+              <span class="cart-card__detail">Maslahat</span>
+            </div>
+            <div class="cart-card__price">100,000 <small>/ ko'rik</small></div>
+          </div>
+        </div>
+        <div class="cart-card reveal reveal-delay-1">
+          <div class="cart-card__visual">
+            <img src="{% static 'images/lab.avif' %}" alt="Laboratoriya" loading="lazy">
+            <span class="cart-card__visual-label">Mashhur</span>
+          </div>
+          <div class="cart-card__body">
+            <h3 class="cart-card__name">Laboratoriya Tahlili</h3>
+            <p class="cart-card__desc">Eng zamonaviy uskunalar yordamida aniq va tezkor tahlil natijalarini taqdim etamiz.</p>
+            <div class="cart-card__details">
+              <span class="cart-card__detail">Qon tahlili</span>
+              <span class="cart-card__detail">Biokimyo</span>
+              <span class="cart-card__detail">1 kun</span>
+            </div>
+            <div class="cart-card__price">250,000 <small>/ tahlil</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="seasonal">
+      <div class="section__header reveal">
+        <span class="section__label">Shifokorlarimiz</span>
+        <h2 class="section__title">Malakali mutaxassislar</h2>
+      </div>
+      <div class="seasonal-tabs reveal" role="tablist">
+        <button class="seasonal-tab is-active" data-season="spring" role="tab" aria-selected="true">
+          <span class="seasonal-tab__icon" aria-hidden="true">&#129658;</span> Terapiya
+        </button>
+        <button class="seasonal-tab" data-season="summer" role="tab" aria-selected="false">
+          <span class="seasonal-tab__icon" aria-hidden="true">&#128102;</span> Pediatriya
+        </button>
+      </div>
+      <div class="seasonal-panels reveal">
+        <div class="seasonal-panel is-active" id="panel-spring" role="tabpanel">
+          <div class="seasonal-panel__visual">
+            <img src="{% static 'images/therapist.avif' %}" alt="Terapiya" loading="lazy">
+            <span class="seasonal-panel__badge">08:00 – 17:00</span>
+          </div>
+          <div class="seasonal-panel__details">
+            <span class="seasonal-panel__season-label">Terapevtik xizmatlar</span>
+            <h3 class="seasonal-panel__name">Umumiy Terapiya</h3>
+            <p class="seasonal-panel__desc">Barcha turdagi ichki kasalliklarni tashxislash va davolash.</p>
+            <a href="{% url 'appointment-list' %}" class="btn btn--primary seasonal-panel__cta">Navbatga yozilish</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt loyalty" id="loyalty">
+      <div class="section__header reveal">
+        <span class="section__label">Imtiyozlar tizimi</span>
+        <h2 class="section__title">BDS SHIFO sodiqlik dasturi</h2>
+      </div>
+      <div class="loyalty__layout">
+        <div class="loyalty__info reveal">
+          <div class="loyalty__perks">
+            <div class="perk">
+              <div class="perk__icon">&#10003;</div>
+              <p class="perk__text"><strong>5-ko'rikda:</strong> 20% chegirma.</p>
+            </div>
+            <div class="perk">
+              <div class="perk__icon">&#10003;</div>
+              <p class="perk__text"><strong>10-ko'rikda:</strong> Tekshiruv bepul.</p>
+            </div>
+          </div>
+          <a href="{% url 'patient-list' %}" class="btn btn--sage" style="margin-top: 2rem;">Ro'yxatdan o'tish</a>
+        </div>
+        <div class="stamp-card reveal reveal-delay-1">
+          <div class="stamp-card__header">
+            <span class="stamp-card__title">Sizning kartangiz</span>
+            <span class="stamp-card__count">7 / 10</span>
+          </div>
+          <div class="stamp-card__grid">
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp stamp--reward stamp--filled">&#9733;</div>
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp stamp--filled">&#129658;</div>
+            <div class="stamp">&#129658;</div>
+            <div class="stamp">&#129658;</div>
+            <div class="stamp stamp--reward">BEPUL</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__top">
+        <div>
+          <div class="footer__brand">BDS<span>+</span>SHIFO</div>
+          <p class="footer__copy">"BOBUR DOKTOR SHIFO" klinikasi — zamonaviy tibbiy yondashuv.</p>
+        </div>
+        <div class="footer__links">
+          <div class="footer__col">
+            <h4>Boshqaruv</h4>
+            <ul>
+              <li><a href="{% url 'department-list' %}">Bo'limlar</a></li>
+              <li><a href="{% url 'staff-list' %}">Shifokorlar</a></li>
+              <li><a href="{% url 'payment-list' %}">To'lovlar</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 BDS SHIFO. BMI loyihasi. Designed by <a href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+      </div>
+    </footer>
+  </main>
+  <script src="{% static 'js/templatemo-frost-script.js' %}"></script>
+</body>
+</html>

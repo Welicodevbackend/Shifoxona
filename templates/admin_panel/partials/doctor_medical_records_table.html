@@ -1,0 +1,41 @@
+{% for record in records %}
+<tr>
+    <td class="ps-4 text-muted">#{{ record.id }}</td>
+    <td>
+        <div class="fw-bold text-dark">{{ record.patient.full_name }}</div>
+        <small class="text-muted">ID: {{ record.patient.id }}</small>
+    </td>
+    <td>
+        <div class="text-truncate" style="max-width: 250px;" title="{{ record.diagnosis }}">
+            {{ record.diagnosis }}
+        </div>
+    </td>
+    <td>
+        <span class="small text-muted"><i class="far fa-calendar-alt me-1"></i> {{ record.created_at|date:"d.m.Y" }}</span>
+    </td>
+    <td class="text-end pe-4">
+        <div class="btn-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+            <a href="{% url 'doctor_medical_record_pdf_export' record.id %}" class="btn btn-white btn-sm text-danger border" title="PDF">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+            <a href="{% url 'doctor_medical_record_edit' record.id %}" class="btn btn-white btn-sm text-primary border" title="Tahrirlash">
+                <i class="fas fa-edit"></i>
+            </a>
+            <form action="{% url 'doctor_medical_record_delete' record.id %}" method="post" class="d-inline" 
+                  onsubmit="return confirm('Haqiqatan ham o\'chirmoqchimisiz?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-white btn-sm text-danger border">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        </div>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5" class="text-center py-5 text-muted">
+        <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
+        <p>Hozircha tibbiy kartalar mavjud emas.</p>
+    </td>
+</tr>
+{% endfor %}

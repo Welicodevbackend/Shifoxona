@@ -1,0 +1,217 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Dashboard | Bobur Doktor Shifo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-primary bg-opacity-10 p-3 rounded-4">
+                        <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Bugungi Navbatlar</p>
+                        <h3 class="mb-0 fw-bold">{{ today_apps_count }} ta</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-success bg-opacity-10 p-3 rounded-4">
+                        <i class="fas fa-money-bill-trend-up fa-2x text-success"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Bugungi Kassa</p>
+                        <h3 class="mb-0 fw-bold">{{ today_revenue|floatformat:0 }} so'm</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-info bg-opacity-10 p-3 rounded-4">
+                        <i class="fas fa-users fa-2x text-info"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Jami Bemorlar</p>
+                        <h3 class="mb-0 fw-bold">{{ patients_count }} nafar</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4 text-secondary text-uppercase small">Haftalik Tashriflar Oqimi</h6>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                <div class="card-body p-4 text-center">
+                    <h6 class="fw-bold mb-4 text-secondary text-uppercase small">To'lovlar Taqsimoti</h6>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="paymentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4 text-secondary text-uppercase small">Eng Faol Bo'limlar (Bugun)</h6>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="deptChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4 text-secondary text-uppercase small">Ish Soatlari Bandligi</h6>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="hourChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global dizayn sozlamalari (Standard Europe UI)
+    Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+    Chart.defaults.color = '#858796';
+    Chart.defaults.scale.grid.display = false; // Ortiqcha chiziqlarni olib tashlaymiz
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        }
+    };
+
+    // 1. Trend Chart (Yuqoridagi chiziqli grafik)
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                data: {{ chart_data }},
+                borderColor: '#4361ee',
+                backgroundColor: 'rgba(67, 97, 238, 0.08)',
+                fill: true,
+                tension: 0.45, // Yumshoqroq egilish
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#4361ee',
+                pointBorderWidth: 2
+            }]
+        },
+        options: commonOptions
+    });
+
+    // 2. Payment Chart (Doughnut - Markazda jami summani ko'rsatish mumkin)
+    new Chart(document.getElementById('paymentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ payment_labels|safe }},
+            datasets: [{
+                data: {{ payment_values }},
+                backgroundColor: ['#4cc9f0', '#4361ee', '#f72585', '#7209b7'],
+                hoverOffset: 10,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            ...commonOptions,
+            cutout: '75%', // Halqani ingichka qilish (modern uslub)
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { usePointStyle: true, padding: 20 }
+                }
+            }
+        }
+    });
+
+    // 3. Dept Chart (Gorizontal Bar - Uzun nomlar uchun eng yaxshisi)
+    new Chart(document.getElementById('deptChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ dept_labels|safe }},
+            datasets: [{
+                label: 'Tashriflar',
+                data: {{ dept_data }},
+                backgroundColor: 'rgba(76, 201, 240, 0.8)',
+                hoverBackgroundColor: '#4cc9f0',
+                borderRadius: 8,
+                barThickness: 20 // Ustunlar qalinligi
+            }]
+        },
+        options: {
+            ...commonOptions,
+            indexAxis: 'y', // Gorizontal ko'rinish
+            scales: {
+                x: { beginAtZero: true, grid: { display: false } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 4. Hour Chart (Vertikal Bar - Peak hours uchun)
+    new Chart(document.getElementById('hourChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ hour_labels|safe }},
+            datasets: [{
+                data: {{ hour_data }},
+                backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                borderColor: '#4361ee',
+                borderWidth: 2,
+                borderRadius: 5,
+                hoverBackgroundColor: '#4361ee'
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                x: { grid: { display: false } },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f8f9fc', drawBorder: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

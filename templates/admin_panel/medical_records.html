@@ -1,0 +1,123 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary"><i class="fas fa-file-medical me-2"></i> Tibbiy Kartalar</h3>
+    </div>
+
+    <div class="card p-3 mb-4 border-0 shadow-sm">
+        <form method="get" id="searchForm" class="row g-3">
+            <div class="col-md-5">
+                <label class="small text-muted">Bemor yoki tashxis</label>
+                <input type="text" name="q" class="form-control" placeholder="Ism yoki tashxisni yozing..." value="{{ query }}">
+            </div>
+            <div class="col-md-5">
+                <label class="small text-muted">Shifokor F.I.Sh</label>
+                <input type="text" name="doctor_name" class="form-control" placeholder="Shifokor ismini yozing..." value="{{ doctor_query }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrlash</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Bemor</th>
+                        <th>Shifokor</th>
+                        <th>Tashxis</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="medicalTableBody">
+                    {% include 'admin_panel/medical_records_table_partial.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- ELEMENTLARNI TANLASH ---
+const patientInput = document.querySelector('input[name="q"]');
+const doctorInput = document.querySelector('input[name="doctor_name"]');
+const tableBody = document.getElementById('medicalTableBody');
+const searchForm = document.getElementById('searchForm');
+
+// --- 1. REAL-TIME QIDIRUV FUNKSIYASI ---
+function updateResults() {
+    const q = patientInput.value;
+    const doctor = doctorInput.value;
+
+    // URL parametrlarini yasash
+    const url = `?q=${encodeURIComponent(q)}&doctor_name=${encodeURIComponent(doctor)}`;
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.text())
+    .then(html => {
+        // Jadval qismini yangilash
+        tableBody.innerHTML = html;
+    })
+    .catch(err => console.error("Qidiruvda xatolik:", err));
+}
+
+// Hodisalarni kuzatish
+if (patientInput) patientInput.addEventListener('input', updateResults);
+if (doctorInput) doctorInput.addEventListener('input', updateResults);
+
+// Formani submit bo'lishidan to'xtatish
+if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        updateResults();
+    });
+}
+
+// --- 2. MODALDA KO'RISH FUNKSIYASI (viewRecord) ---
+function viewRecord(id) {
+    fetch(`/dashboard/medical-records/${id}/view/`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Serverda xatolik yoki maʼlumot topilmadi');
+        return res.json();
+    })
+    .then(data => {
+        // SweetAlert orqali ma'lumotni chiqarish
+        Swal.fire({
+            title: 'Tibbiy karta tafsilotlari',
+            html: `
+                <div class="text-start">
+                    <p><b>Bemor:</b> ${data.patient}</p>
+                    <p><b>Shifokor:</b> ${data.doctor}</p>
+                    <p><b>Sana:</b> ${data.date}</p>
+                    <hr>
+                    <p><b>Tashxis:</b> <br> ${data.diagnosis}</p>
+                    <p><b>Retsept:</b> <br> <i class="text-muted">${data.prescription}</i></p>
+                </div>`,
+            confirmButtonText: 'Yopish',
+            confirmButtonColor: '#3085d6'
+        });
+    })
+    .catch(err => {
+        console.error("Xatolik:", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Xatolik',
+            text: 'Maʼlumotlarni yuklab boʻlmadi!'
+        });
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title fw-bold">Navbatni tahrirlash</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<form action="{% url 'dashboard_update_online_appointment' app.pk %}" method="POST">
+    {% csrf_token %}
+    <div class="modal-body p-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Bemor ismi</label>
+                <input type="text" name="patient_name" class="form-control" value="{{ app.patient_name }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Telefon</label>
+                <input type="text" name="patient_phone" class="form-control" value="{{ app.patient_phone }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Bo'lim</label>
+                <select name="department" id="edit_dept" class="form-select" required>
+                    {% for d in departments %}
+                    <option value="{{ d.id }}" {% if d == app.department %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Shifokor</label>
+                <select name="doctor" id="edit_doctor" class="form-select" required>
+                    {% for doc in doctors %}
+                    <option value="{{ doc.id }}" {% if doc == app.doctor %}selected{% endif %}>{{ doc.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Sana</label>
+                <input type="date" name="date" id="edit_date" class="form-control" value="{{ app.date|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Vaqt</label>
+                <select name="time_slot" id="edit_time" class="form-select" required>
+                    <option value="{{ app.time_slot|time:'H:i' }}">{{ app.time_slot|time:'H:i' }} (Hozirgi)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Yopish</button>
+        <button type="submit" class="btn btn-primary px-4">Yangilash</button>
+    </div>
+</form>
+
+<script>
+$(document).ready(function() {
+    // 1. Bo'lim o'zgarganda shifokorlarni yangilash
+    $('#edit_dept').on('change', function() {
+        const deptId = $(this).val();
+        const doctorSelect = $('#edit_doctor');
+        const timeSelect = $('#edit_time');
+
+        // Tozalash: Bemor ismi va tel qoladi, qolgani tozalanadi
+        doctorSelect.html('<option value="">--- Shifokorni tanlang ---</option>');
+        timeSelect.html('<option value="">--- Avval shifokorni tanlang ---</option>');
+
+        if (deptId) {
+            // Senda hamma url bitta joyda bo'lsa, /get-doctors-by-dept/ yoki shunga o'xshash bo'lishi kerak
+            fetch(`/get-doctors-by-dept/?dept_id=${deptId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(doc => {
+                        doctorSelect.append(`<option value="${doc.id}">${doc.full_name}</option>`);
+                    });
+                })
+                .catch(err => console.error("Shifokorlarni yuklashda xato:", err));
+        }
+    });
+
+    // 2. Shifokor yoki Sana o'zgarganda Vaqt slotlarini yangilash
+    // Bu funksiya aynan sening view dagi slot mantiqingga murojaat qiladi
+    $('#edit_doctor, #edit_date').on('change', function() {
+        const docId = $('#edit_doctor').val();
+        const date = $('#edit_date').val();
+        const timeSelect = $('#edit_time');
+
+        if (docId && date) {
+            // Senda mavjud bo'lgan slotlar API-si
+            fetch(`/api/available-slots/?doctor_id=${docId}&date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    timeSelect.html('<option value="">--- Vaqtni tanlang ---</option>');
+                    if (data.available_slots) {
+                        data.available_slots.forEach(slot => {
+                            timeSelect.append(`<option value="${slot}">${slot}</option>`);
+                        });
+                    }
+                })
+                .catch(err => console.error("Slotlarni yuklashda xato:", err));
+        }
+    });
+});
+</script>

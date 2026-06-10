@@ -1,0 +1,56 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block content %}
+<div class="card border-0 shadow-sm rounded-4 p-4 mx-auto" style="max-width: 600px;">
+    <h5 class="fw-bold mb-4"><i class="fas fa-lock me-2 text-primary"></i>Xavfsizlikni boshqarish</h5>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="small fw-bold text-muted">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="mb-4">
+            <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Parol murakkabligi:</span>
+                <span id="strengthText" class="fw-bold text-info">Oddiy</span>
+            </div>
+            <div class="progress" style="height: 7px; border-radius: 10px;">
+                <div id="strengthBar" class="progress-bar bg-info" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-pill px-5 w-100 py-2">O'zgarishlarni saqlash</button>
+    </form>
+</div>
+
+<script>
+    const passInput = document.querySelector('input[name="new_password1"]');
+    const bar = document.getElementById('strengthBar');
+    const text = document.getElementById('strengthText');
+
+    if(passInput) {
+        passInput.addEventListener('input', function() {
+            let s = 0;
+            const v = this.value;
+            if(v.length >= 8) s += 25;
+            if(v.match(/[A-Z]/)) s += 25;
+            if(v.match(/[0-9]/)) s += 25;
+            if(v.match(/[^A-Za-z0-9]/)) s += 25;
+
+            bar.style.width = s + '%';
+            if(s <= 50) { text.innerText = "Kuchsiz"; bar.className = "progress-bar bg-danger"; }
+            else if(s <= 75) { text.innerText = "Yaxshi"; bar.className = "progress-bar bg-info"; }
+            else { text.innerText = "Mukammal"; bar.className = "progress-bar bg-success"; }
+        });
+    }
+</script>
+
+<style>
+    input { display: block; width: 100%; padding: 10px; background: #f8f9fa; border: 1px solid #eee; border-radius: 8px; margin-top: 5px; }
+</style>
+{% endblock %}

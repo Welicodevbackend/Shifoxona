@@ -1,0 +1,260 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="uz">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Kirish | Bobur Doktor Shifo</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);-->
+<!--            height: 100vh;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--        }-->
+<!--        .form-control {-->
+<!--            border-radius: 8px;-->
+<!--            padding: 12px 15px; /* Tepasi va pastidan 12px, yonlaridan 15px */-->
+<!--            height: auto;-->
+<!--        }-->
+<!--        .login-card {-->
+<!--            width: 100%;-->
+<!--            max-width: 400px;-->
+<!--            padding: 30px;-->
+<!--            border: none;-->
+<!--            border-radius: 15px;-->
+<!--            box-shadow: 0 10px 25px rgba(0,0,0,0.1);-->
+<!--            background: white;-->
+<!--        }-->
+<!--        .brand-logo {-->
+<!--            color: #007bff;-->
+<!--            font-size: 24px;-->
+<!--            font-weight: bold;-->
+<!--            text-align: center;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--        .btn-login {-->
+<!--            background-color: #007bff;-->
+<!--            border: none;-->
+<!--            padding: 12px;-->
+<!--            font-weight: 600;-->
+<!--            transition: 0.3s;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .btn-login:hover {-->
+<!--            background-color: #0056b3;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .form-control {-->
+<!--            border-radius: 8px;-->
+<!--            padding: 25px 15px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="login-card">-->
+<!--    <div class="brand-logo">-->
+<!--        <i class="fas fa-hand-holding-medical"></i> <br>-->
+<!--        BOBUR DOKTOR SHIFO-->
+<!--    </div>-->
+<!--    <h5 class="text-center text-secondary mb-4">Xodimlar uchun tizimga kirish</h5>-->
+
+<!--    <form method="post" action="{{ request.get_full_path }}">-->
+<!--        {% csrf_token %}-->
+
+<!--        <input type="hidden" name="next" value="{{ request.GET.next }}">-->
+
+<!--        <div class="form-group">-->
+<!--            <label for="username">Login</label>-->
+<!--            <input type="text" name="username" id="username" class="form-control" placeholder="Loginingizni kiriting" required>-->
+<!--        </div>-->
+
+<!--        <div class="form-group">-->
+<!--            <label for="password">Parol</label>-->
+<!--            <input type="password" name="password" id="password" class="form-control" placeholder="Parolingizni kiriting" required>-->
+<!--        </div>-->
+
+
+<!--        &lt;!&ndash; Meni eslab qolish checkbox-i &ndash;&gt;-->
+<!--        <div class="form-group form-check mt-3 mb-3 d-flex align-items-center" style="gap: 5px;">-->
+<!--            <input type="checkbox" name="remember_me" class="form-check-input" id="remember_me" checked style="width: 16px; height: 16px; cursor: pointer; margin-top: 0;">-->
+<!--            <label class="form-check-label text-secondary" for="remember_me" style="cursor: pointer; font-size: 14px; user-select: none;">-->
+<!--                Meni eslab qolish...-->
+<!--            </label>-->
+<!--        </div>-->
+
+
+
+<!--        {% if form.errors %}-->
+<!--            <div class="alert alert-danger p-2" style="font-size: 14px;">-->
+<!--                Login yoki parol xato!-->
+<!--            </div>-->
+<!--        {% endif %}-->
+
+<!--        <button type="submit" class="btn btn-primary btn-block btn-login mt-4">-->
+<!--            Tizimga kirish-->
+<!--        </button>-->
+<!--    </form>-->
+
+<!--    <p class="text-center mt-4 text-muted" style="font-size: 12px;">-->
+<!--        &copy; 2026 Bobur Doktor Shifo. Barcha huquqlar himoyalangan.-->
+<!--    </p>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tizimga kirish | Bobur Doktor Shifo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8fafc !important; /* Xuddi 2-rasmdagi toza och fon */
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); /* Juda mayin soya */
+            background: white;
+        }
+        .brand-logo {
+            color: #1e3a8a;
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .brand-logo span {
+            color: #2563eb;
+        }
+        .login-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #1e3a8a;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .login-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 14px;
+            height: auto;
+            font-size: 15px;
+            background-color: #ffffff;
+            color: #1f2937;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+            outline: none;
+        }
+        .btn-login {
+            background-color: #2563eb; /* 2-rasmdagi ko'k rang */
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            color: white;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .btn-login:hover {
+            background-color: #1d4ed8;
+            color: white;
+        }
+        .remember-text {
+            font-size: 14px;
+            color: #4b5563;
+            user-select: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <!-- Tizim nomi (Logotip o'rnida) -->
+    <div class="brand-logo">
+        <span>⚡</span> My Clinic
+    </div>
+
+    <!-- Login Oynasi -->
+    <div class="login-card">
+        <div class="login-title">Tizimga kirish</div>
+        <div class="login-subtitle">Kirish uchun Login hamda Parolingizni kiriting!</div>
+
+        <form action="{{ app_path }}" method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger p-2 mb-3" style="font-size: 14px; border-radius: 6px;">
+                    Login yoki parol xato kiritildi!
+                </div>
+            {% endif %}
+
+            <!-- Login Input -->
+            <div class="form-group">
+                <label for="id_username">Login</label>
+                <input type="text" name="username" autofocus required id="id_username" class="form-control">
+            </div>
+
+            <!-- Parol Input -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_password">Parol</label>
+                <input type="password" name="password" required id="id_password" class="form-control">
+            </div>
+
+            <!-- Meni eslab qolish Checkbox -->
+<!--            <div class="form-group mb-4">-->
+<!--                <div class="d-flex align-items-center" style="gap: 8px;">-->
+<!--                    <input type="checkbox" name="remember_me" id="remember_me" checked style="width: 16px; height: 16px; cursor: pointer; accent-color: #2563eb;">-->
+<!--                    <label class="remember-text mb-0" for="remember_me">Meni eslab qolish...</label>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <!-- Kirish Tugmasi -->
+            <button type="submit" class="btn btn-primary btn-block btn-login">
+                Kirish
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

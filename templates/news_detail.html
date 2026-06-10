@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% static 'assets/img/ssss.jpg' as bg_url %}
+
+<section class="page-header d-flex align-items-center justify-content-center" style="background: url('{{ bg_url }}') center 25% no-repeat; background-size: cover;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1;"></div>
+
+    <div class="container text-center" style="position: relative; z-index: 2;">
+        <h1 class="fw-bold display-4 text-white mb-3">{{ item.title }}</h1>
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}">Bosh sahifa</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'news_list' %}">Yangiliklar</a>
+                </li>
+                <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+                    Batafsil
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="news-detail-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+    <div class="bg-white p-4 p-md-5 shadow-sm" style="border-radius: 15px;">
+        <img src="{{ item.image.url }}" class="img-fluid mb-4 w-100" alt="{{ item.title }}" style="border-radius: 12px; max-height: 450px; object-fit: cover;">
+
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="badge bg-light text-dark border me-3 p-2">
+                <i class="bi bi-calendar3 text-info me-1"></i> {{ item.created_at|date:"d F, Y" }}
+            </div>
+            <div class="text-muted small">
+                <i class="bi bi-eye text-info me-1"></i> {{ item.views_count }} marta ko'rildi
+            </div>
+        </div>
+
+        <div class="news-content text-dark mt-4" style="letter-spacing: 0.3px;">
+    {{ item.content|safe }}
+</div>
+    </div>
+</div>
+
+            <div class="col-lg-4">
+                <div class="sidebar ms-lg-4 mt-4 mt-lg-0">
+                    
+                    <div class="widget mb-5 p-4 bg-white shadow-sm" style="border-radius: 12px;">
+                        <h4 class="widget-title border-bottom pb-2 mb-4">Qidiruv</h4>
+                        <div class="input-group search-box">
+                            <input type="text" id="dept-search-input" class="form-control border-end-0 bg-light" placeholder="bo'limni qidiring...">
+                            <span class="input-group-text bg-light border-start-0 text-info">
+                                <i class="bi bi-search"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="widget mb-5 p-4 bg-white shadow-sm" style="border-radius: 12px;">
+                        <h4 class="widget-title border-bottom pb-2 mb-4">Bo'limlar</h4>
+                        <ul class="list-group list-group-flush border-0" id="departments-list">
+                            {% for dept in departments %}
+                            <li class="list-group-item border-0 px-0 bg-transparent dept-search-item">
+                                <a href="{% url 'departments_page' %}?dept={{ dept.id }}" class="text-decoration-none text-dark d-flex align-items-center transition">
+                                    <i class="bi bi-chevron-right text-info me-2 small"></i>
+                                    <span class="dept-name-text">{{ dept.name }}</span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="widget p-4 bg-white shadow-sm" style="border-radius: 12px;">
+                        <h4 class="widget-title border-bottom pb-2 mb-4">So'nggi yangiliklar</h4>
+                        {% for recent in recent_news %}
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                            <img src="{{ recent.image.url }}" class="rounded" style="width: 70px; height: 50px; object-fit: cover;">
+                            <div class="ms-3">
+                                <h6 class="mb-0 small fw-bold">
+                                    <a href="{% url 'news_detail' recent.pk %}" class="text-decoration-none text-dark hover-info">{{ recent.title|truncatechars:45 }}</a>
+                                </h6>
+                                <span class="text-muted" style="font-size: 11px;">{{ recent.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+ /* Yangilik matni dizayni - Jiddiy tahrir */
+  .news-content {
+    text-align: justify;
+    color: #333;
+    line-height: 2; /* Qatorlar orasi yanada kengroq */
+    font-size: 1.2rem; /* Shrift kattalashtirildi */
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Paragraflar orasini ochish (Rasmda aynan shu yetishmayapti) */
+  .news-content p {
+    margin-bottom: 30px !important;
+    display: block;
+  }
+
+  /* Matndagi birinchi so'zga urg'u berish (ixtiyoriy, chiroyli chiqadi) */
+  .news-content p:first-child::first-letter {
+    float: left;
+    font-size: 3.5rem;
+    line-height: 1;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #00a0e3;
+    text-transform: uppercase;
+  }
+
+  /* Matn ichidagi sarlavhalar */
+  .news-content h2, .news-content h3 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #2c3155;
+    font-weight: 800;
+  }
+ /* 1. Header Dizayni - Namunaga moslandi */
+.page-header {
+  background-size: cover;
+  background-position: center 25%;
+  position: relative;
+  padding: 180px 0 40px 0; /* Namunadagi standart masofa */
+  margin-top: 0px; /* Navbar rasm ustiga tushishi uchun */
+  border-bottom: 5px solid #00a0e3;
+  overflow: hidden;
+  min-height: auto; /* Keraksiz balandlikni olib tashladik */
+}
+
+.page-header h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+
+/* Breadcrumb havolalari uchun */
+.page-header .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.news-content p::first-letter,
+.news-content li::first-letter,
+.news-content span::first-letter {
+    all: unset !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Matnni chiroyli va o'qishli qilish */
+.news-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: #333;
+    text-align: justify;
+}
+
+.news-content ul, .news-content ol {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.news-content li {
+    margin-bottom: 10px;
+}
+
+.page-header .breadcrumb-item a:hover {
+  color: #fff !important;
+}
+
+  .widget-title { color: #2c3155; font-weight: 700; position: relative; font-size: 1.25rem; }
+  .widget-title::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 50px; height: 3px; background: #00a0e3; }
+  
+  .hover-info:hover { color: #00a0e3 !important; }
+  .breadcrumb-item + .breadcrumb-item::before { content: ">"; color: rgba(255, 255, 255, 0.6); }
+  .dept-search-item a:hover { padding-left: 8px; color: #00a0e3 !important; }
+  .transition { transition: 0.3s; }
+</style>
+
+<script>
+/* Bo'limlarni qidirish skripti */
+document.getElementById('dept-search-input').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let items = document.querySelectorAll('.dept-search-item');
+    items.forEach(function(item) {
+        let name = item.querySelector('.dept-name-text').innerText.toLowerCase();
+        item.style.display = name.includes(filter) ? "block" : "none";
+    });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sahifa yuklanishi bilan fon rejimida so'rov yuboramiz
+        fetch("{% url 'increment_views_ajax' item.pk %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                console.log("Ko'rishlar soni bazada yangilandi.");
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Laboratoriya boshqaruvi | BDS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark m-0">Laboratoriya Tahlillari</h3>
+    </div>
+
+    <div class="card p-3 border-0 shadow-sm rounded-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label class="form-label small fw-bold text-muted">Tahlil nomi bo'yicha qidirish</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Yozishni boshlang...">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">Saralash</label>
+                <select id="sortSelect" class="form-select">
+                    <option value="-created_at">Yangi qo'shilganlar</option>
+                    <option value="price">Narxi (arzonlari oldin)</option>
+                    <option value="-price">Narxi (qimmatlari oldin)</option>
+                    <option value="name">Nomi bo'yicha (A-Z)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Tahlil Nomi</th>
+                        <th>Narxi</th>
+                        <th>Qo'shilgan sana</th>
+                        <th class="text-end pe-4">Ko'rish</th>
+                    </tr>
+                </thead>
+                <tbody id="labTestTableBody">
+                    {% include 'admin_panel/partials/lab_test_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const tableBody = document.getElementById('labTestTableBody');
+
+    function updateTable() {
+        const q = searchInput.value;
+        const sort = sortSelect.value;
+        const baseUrl = "{% url 'lab_tests_list_dashboard' %}";
+        
+        fetch(`${baseUrl}?q=${encodeURIComponent(q)}&sort=${sort}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => { tableBody.innerHTML = html; });
+    }
+
+    searchInput.addEventListener('input', updateTable);
+    sortSelect.addEventListener('change', updateTable);
+</script>
+{% endblock %}

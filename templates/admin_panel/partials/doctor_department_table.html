@@ -1,0 +1,44 @@
+{% for dept in departments %}
+<tr>
+    <td class="ps-4">
+        <a href="{% url 'doctor_department_detail' dept.id %}" class="text-decoration-none fw-bold text-primary">
+            {{ dept.id }}
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'doctor_department_detail' dept.id %}">
+            {% if dept.image %}
+                <img src="{{ dept.image.url }}" class="dept-img shadow-sm" alt="{{ dept.name }}">
+            {% else %}
+                <div class="dept-img bg-light d-flex align-items-center justify-content-center text-muted">
+                    <i class="fas fa-hospital"></i>
+                </div>
+            {% endif %}
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'doctor_department_detail' dept.id %}" class="text-decoration-none fw-bold text-dark">
+            {{ dept.name }}
+        </a>
+    </td>
+    <td>
+        <span class="text-muted small">
+            <i class="far fa-calendar-alt me-1"></i> {{ dept.created_at|date:"d.m.Y" }}
+        </span>
+    </td>
+    <td class="text-center">
+        <span class="status-badge" style="background: #eef2ff; color: #3182ce;">
+            {{ dept.services.count }} ta xizmat
+        </span>
+    </td>
+    <td class="text-end pe-4">
+        <a href="{% url 'doctor_department_detail' dept.id %}" class="action-view">
+            <i class="fas fa-eye"></i>
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6" class="text-center py-5 text-muted">Ma'lumot topilmadi.</td>
+</tr>
+{% endfor %}

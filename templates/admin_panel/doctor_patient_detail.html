@@ -1,0 +1,88 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <a href="{% url 'doctor_patients_list_dashboard' %}" class="text-muted text-decoration-none small"><i class="fas fa-chevron-left me-1"></i> Orqaga qaytish</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                    {{ patient.full_name|slice:":1" }}
+                </div>
+                <div class="ms-3">
+                    <h3 class="fw-bold m-0">{{ patient.full_name }}</h3>
+                    <span class="badge bg-light text-primary border">ID: #{{ patient.id }}</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+    <a href="{% url 'doctor_patient_edit_dashboard' patient.id %}" class="btn btn-warning btn-sm px-3 text-white">
+        <i class="fas fa-edit me-1"></i> Tahrirlash
+    </a>
+    <button type="button" class="btn btn-danger btn-sm px-3" onclick="openDeleteModal()">
+        <i class="fas fa-trash me-1"></i> O'chirish
+    </button>
+</div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Telefon raqam</label>
+                <span class="fw-bold">{{ patient.phone }}</span>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Tug'ilgan sana</label>
+                <span class="fw-bold">{{ patient.birth_date|default:"Kiritilmagan" }}</span>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted small d-block">Jinsi</label>
+                <span class="fw-bold">{{ patient.get_gender_display }}</span>
+            </div>
+            <div class="col-md-12">
+                <label class="text-muted small d-block">Manzili</label>
+                <span class="fw-bold">{{ patient.address|default:"Manzil kiritilmagan" }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-body text-center p-4">
+                <div class="text-danger mb-3">
+                    <i class="fas fa-exclamation-circle fa-4x"></i>
+                </div>
+                <h5 class="fw-bold mb-2">O'chirishni tasdiqlaysizmi?</h5>
+                <p class="text-muted small">
+                    Haqiqatdan ham <span class="fw-bold text-dark">{{ patient.full_name }}</span> ismli bemorni bazadan o'chirmoqchimisiz?
+                </p>
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Yo'q</button>
+
+                    <form action="{% url 'doctor_patient_delete_dashboard' patient.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4" style="border-radius: 10px;">Ha, o'chirilsin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal() {
+        var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        myModal.show();
+    }
+</script>
+
+<style>
+    /* Orqa fon xiralashishi uchun (ixtiyoriy) */
+    .modal-backdrop.show {
+        opacity: 0.6;
+        backdrop-filter: blur(4px);
+    }
+</style>
+{% endblock %}

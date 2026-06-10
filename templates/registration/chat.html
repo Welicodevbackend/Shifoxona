@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+
+{% load static %}
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klinika Yordamchisi</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50:  #E1F5EE;
+    --green-100: #9FE1CB;
+    --green-600: #0F6E56;
+    --green-800: #085041;
+    --blue-50:   #E6F1FB;
+    --blue-600:  #185FA5;
+    --gray-50:   #F8F9FA;
+    --gray-100:  #F1F3F5;
+    --gray-200:  #DEE2E6;
+    --gray-500:  #868E96;
+    --gray-700:  #343A40;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--gray-100);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .chat-card {
+    width: 100%;
+    max-width: 560px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 90vh;
+    max-height: 700px;
+  }
+
+  /* ── HEADER ── */
+  .chat-header {
+    background: var(--green-600);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .header-icon {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header-info h1 {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .header-info p {
+    color: rgba(255,255,255,0.75);
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #5DCAA5;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── MESSAGES ── */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--gray-50);
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--gray-200); border-radius: 4px;
+  }
+
+  .msg { display: flex; gap: 8px; align-items: flex-end; }
+  .msg.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .bot .avatar { background: var(--green-50); }
+  .user .avatar { background: var(--blue-50); }
+
+  .bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-700);
+  }
+  .bot .bubble {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-bottom-left-radius: var(--radius-sm);
+  }
+  .user .bubble {
+    background: var(--green-600);
+    color: #fff;
+    border-bottom-right-radius: var(--radius-sm);
+  }
+
+  /* Typing indicator */
+  .typing-bubble {
+    display: flex; gap: 4px;
+    align-items: center;
+    padding: 12px 16px;
+  }
+  .typing-bubble span {
+    width: 7px; height: 7px;
+    background: var(--gray-500);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+  .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+  }
+
+  /* ── SUGGESTIONS ── */
+  .suggestions {
+    padding: 0.5rem 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: var(--gray-50);
+    flex-shrink: 0;
+  }
+  .suggestion-btn {
+    background: var(--green-50);
+    color: var(--green-600);
+    border: 1px solid var(--green-100);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .suggestion-btn:hover { background: var(--green-100); }
+
+  /* ── INPUT AREA ── */
+  .chat-input-area {
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  textarea {
+    flex: 1;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 9px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    max-height: 100px;
+    transition: border-color 0.15s;
+    color: var(--gray-700);
+    background: var(--gray-50);
+  }
+  textarea:focus { border-color: var(--green-600); background: #fff; }
+  textarea::placeholder { color: var(--gray-500); }
+
+  .send-btn {
+    width: 40px; height: 40px;
+    background: var(--green-600);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .send-btn:hover { background: var(--green-800); }
+  .send-btn:active { transform: scale(0.93); }
+  .send-btn:disabled { background: var(--gray-200); cursor: not-allowed; }
+  .send-btn svg { width: 18px; height: 18px; fill: #fff; }
+</style>
+</head>
+<body>
+
+<div class="chat-card">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-icon">🏥</div>
+    <div class="header-info">
+      <h1>Klinika Yordamchisi</h1>
+      <p><span class="status-dot"></span>Onlayn — 24/7 maslahat</p>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">
+      <div class="avatar">🤖</div>
+      <div class="bubble">
+        Assalomu alaykum! Men klinika yordamchisiman. 👋<br><br>
+        Qayerda noqulaylik sezayapsiz? Shikoyatingizni yozing — sizga mos bo'lim yoki shifokorni tavsiya qilaman.
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick suggestions -->
+  <div class="suggestions" id="suggestions">
+    <button class="suggestion-btn" onclick="sendSuggestion('Boshim og\'riyapti')">🤕 Bosh og'rig'i</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Qornim og\'riyapti')">🫁 Qorin og'rig'i</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Ko\'zim og\'riyapti')">👁 Ko'z og'rig'i</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Tishim og\'riyapti')">🦷 Tish og'rig'i</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Yuragim yomon')">❤️ Yurak</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Xizmat narxlari qancha?')">💰 Narxlar</button>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <textarea
+      id="userInput"
+      placeholder="Shikoyatingizni yozing..."
+      rows="1"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"
+    ></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<script>
+  const chatMessages = document.getElementById('chatMessages');
+  const userInput   = document.getElementById('userInput');
+  const sendBtn     = document.getElementById('sendBtn');
+  const suggestions = document.getElementById('suggestions');
+
+  // Suhbat tarixini saqlash (Oxirgi 10 ta xabar uchun)
+  let history = [];
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function appendMessage(role, text) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `msg ${role}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = role === 'bot' ? '🤖' : '👤';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    // Markdown uslubidagi yulduzchalarni (Gemini ko'p ishlatadi) tozalash yoki almashtirish
+    let formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    bubble.innerHTML = formattedText;
+
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(bubble);
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msgDiv;
+  }
+
+  function showTyping() {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg bot';
+    msgDiv.id = 'typingIndicator';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = '🤖';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = `<div class="typing-bubble">
+      <span></span><span></span><span></span>
+    </div>`;
+
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(bubble);
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function hideTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
+  function sendSuggestion(text) {
+    userInput.value = text;
+    suggestions.style.display = 'none';
+    sendMessage();
+  }
+
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) return;
+
+    // UI interfeysini yangilash
+    suggestions.style.display = 'none';
+    appendMessage('user', text);
+
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    showTyping();
+
+    try {
+      const res = await fetch("{% url 'chatbot_api' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        // Faqat oxirgi 10 ta xabarni context sifatida yuboramiz
+        body: JSON.stringify({
+            message: text,
+            history: history
+        }),
+      });
+
+      const data = await res.json();
+      hideTyping();
+
+      if (data.reply) {
+        appendMessage('bot', data.reply);
+
+        // Tarixni yangilash (View'da assistant -> model ga o'giriladi)
+        history.push({ role: 'user', content: text });
+        history.push({ role: 'assistant', content: data.reply });
+
+        // Tarix juda o'sib ketmasligi uchun oxirgi 10 tasini saqlaymiz
+        if (history.length > 10) {
+            history = history.slice(-10);
+        }
+      } else {
+        appendMessage('bot', '⚠️ Kechirasiz, xatolik yuz berdi: ' + (data.error || 'Nomaʼlum xato'));
+      }
+    } catch (err) {
+      hideTyping();
+      appendMessage('bot', '⚠️ Server bilan bog\'lanishda xatolik yuz berdi.');
+      console.error(err);
+    }
+
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bog'lanish - BOBUR DOKTOR SHIFO{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Hero qismini rasm fonli qilish */
+  .page-title {
+  background-size: cover;
+  background-position: center 25%;
+  position: relative;
+  padding: 160px 0 40px 0; /* Namunadagi standart masofa */
+  margin-top: 0px; /* Navbar rasm ustiga tushishi uchun */
+  border-bottom: 5px solid #00a0e3;
+  overflow: hidden;
+}
+
+.heading-title {
+  font-size: 3.5rem; /* Biroz optimallashdi */
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.page-title p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 2;
+}
+  /* Container kengligini bo'limlar bilan bir xil qilish */
+  .custom-container {
+    width: 100%;
+    padding-right: 4%;
+    padding-left: 4%;
+    margin: 0 auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  {% static 'assets/img/ssss.jpg' as bg_url %}
+
+<div class="page-title" data-aos="fade" style="background: url('{{ bg_url }}') center 25% no-repeat; background-size: cover;">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1;"></div>
+
+  <div class="container text-center" style="position: relative; z-index: 2;">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h1 class="heading-title">Bog'lanish</h1>
+
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+            <li class="breadcrumb-item">
+              <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+            </li>
+            <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+              Bog'lanish
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <section id="contact" class="contact section py-5 bg-light">
+    <div class="custom-container" data-aos="fade-up" data-aos-delay="100">
+
+     {% if messages %}
+  <div class="row justify-content-center mb-4">
+    <div class="col-lg-12">
+      {% for message in messages %}
+        {% if 'contact_form' in message.tags %}
+          <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm" role="alert" style="background-color: #e0f4ff; color: #00a0e3; border-radius: 15px;">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-check-circle-fill me-3" style="font-size: 24px;"></i>
+              <div>
+                <strong class="d-block">Muvaffaqiyatli!</strong>
+                {{ message }}
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+      <div class="row g-5">
+        <div class="col-lg-5">
+          <div class="contact-info-wrapper h-100">
+            <div class="p-4 bg-white rounded-4 shadow-sm mb-4 border-start border-4 border-info">
+              <div class="d-flex align-items-center">
+                <div class="info-icon me-3" style="width: 50px; height: 50px; background: #e0f4ff; color: #00a0e3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="bi bi-geo-alt"></i></div>
+                <div>
+                  <h5 class="fw-bold mb-0">Manzil</h5>
+                  <p class="text-muted mb-0">Farg'ona viloyati, Dang'ara tumani, Sanoat ko'chasi, 1A-uy</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-white rounded-4 shadow-sm mb-4 border-start border-4 border-info">
+              <div class="d-flex align-items-center">
+                <div class="info-icon me-3" style="width: 50px; height: 50px; background: #e0f4ff; color: #00a0e3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="bi bi-envelope"></i></div>
+                <div>
+                  <h5 class="fw-bold mb-0">Email</h5>
+                  <p class="text-muted mb-0">BOBUR@MAIL.RU</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-white rounded-4 shadow-sm mb-4 border-start border-4 border-info">
+              <div class="d-flex align-items-center">
+                <div class="info-icon me-3" style="width: 50px; height: 50px; background: #e0f4ff; color: #00a0e3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;"><i class="bi bi-telephone"></i></div>
+                <div>
+                  <h5 class="fw-bold mb-0">Telefon</h5>
+                  <p class="text-muted mb-0">+998 99 100-42-15</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-4 overflow-hidden shadow-sm" style="border: 2px solid #fff;">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3034.425810457618!2d70.9328221153982!3d40.488497979356884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDI5JzE4LjYiTiA3MMKwNTYnMDYuMCJF!5e0!3m2!1suz!2s!4v1650000000000"
+                  width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="contact-form-card shadow-lg" style="background: #fff; padding: 45px; border-radius: 25px; border: 1px solid #eee;">
+            <h2 class="fw-bold mb-4" style="color: #2c3155; border-left: 5px solid #00a0e3; padding-left: 15px;">Xabar yuboring</h2>
+
+            <form action="{% url 'contact' %}" method="post" class="contact-form">
+              {% csrf_token %}
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Ismingiz</label>
+                  <input type="text" class="form-control" name="name" placeholder="Masalan: Azizbek" required style="border-radius: 12px; padding: 14px; background: #f8fbff;">
+                </div>
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Email manzilingiz</label>
+                  <input type="email" class="form-control" name="email" placeholder="example@mail.com" required style="border-radius: 12px; padding: 14px; background: #f8fbff;">
+                </div>
+                <div class="col-12">
+                  <label class="small fw-bold text-muted mb-1">Mavzu</label>
+                  <input type="text" class="form-control" name="subject" placeholder="Qanday masalada?" required style="border-radius: 12px; padding: 14px; background: #f8fbff;">
+                </div>
+                <div class="col-12">
+                  <label class="small fw-bold text-muted mb-1">Xabaringiz</label>
+                  <textarea class="form-control" name="message" placeholder="Xabaringizni batafsil yozing..." rows="5" required style="border-radius: 12px; padding: 14px; background: #f8fbff;"></textarea>
+                </div>
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-sm" style="background: #00a0e3; border: none; font-size: 1.1rem;">
+                    Xabarni yuborish <i class="bi bi-send ms-2"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

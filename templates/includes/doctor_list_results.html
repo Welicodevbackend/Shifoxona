@@ -1,0 +1,31 @@
+{% for doctor in doctors %}
+<div class="doctor-profile" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
+  <div class="profile-header">
+    <div class="doctor-avatar" style="background: #f8f9fa; border-radius: 15px; overflow: hidden; height: 120px; width: 120px; display: flex; align-items: center; justify-content: center;">
+      <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: 100%; padding: 10px;">
+      <div class="status-indicator available"></div>
+    </div>
+    <div class="doctor-details">
+      <h4>{{ doctor.full_name }}</h4>
+      <span class="specialty-tag">{{ doctor.doctor_details.specialization|default:"Mutaxassis" }}</span>
+      <div class="experience-info">
+        <i class="bi bi-award"></i>
+        <span>{{ doctor.doctor_details.experience_years|default:0 }} yillik tajriba</span>
+      </div>
+    </div>
+  </div>
+  <div class="rating-section">
+    <div class="stars">
+      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+    </div>
+    <span class="rating-score">4.9</span>
+    <span class="review-count">(127 sharhlar)</span>
+  </div>
+  <div class="action-buttons">
+    <a href="{% url 'doctor_detail' pk=doctor.pk %}" class="btn-secondary">Ma'lumotlar</a>
+    <a href="{% url 'doctor_detail' pk=doctor.pk %}" class="btn-primary">Qabulga yozilish</a>
+  </div>
+</div>
+{% empty %}
+  <p class="text-center w-100 py-5 text-muted">Qidiruv bo'yicha shifokor topilmadi.</p>
+{% endfor %}

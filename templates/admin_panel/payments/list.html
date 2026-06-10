@@ -1,0 +1,167 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}To'lovlar Nazorati{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-success"><i class="fas fa-money-check-alt me-2"></i> To'lovlar</h3>
+        <a href="{% url 'payment_create' %}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-1"></i> Yangi to'lov qo'shish
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm p-3 mb-4">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <input type="text" name="q" class="form-control" placeholder="Bemor ismi bo'yicha qidirish..." value="{{ q }}">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">Barcha holatlar</option>
+                    <option value="paid" {% if status == 'paid' %}selected{% endif %}>To'langan</option>
+                    <option value="unpaid" {% if status == 'unpaid' %}selected{% endif %}>To'lanmagan</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100">Filtrlash</button>
+            </div>
+        </form>
+    </div>
+
+   <div class="card border-0 shadow-sm">
+    <!-- AJAX qidiruv natijalari aynan mana shu div ichida yangilanadi -->
+    <div id="payment-table-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Bemor</th>
+                        <th>Xizmat turi</th>
+                        <th>Summa</th>
+                        <th>To'lov turi</th>
+                        <th>Holati</th>
+                        <th class="text-end pe-4">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payments %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">
+                                {% if p.appointment %}
+                                    {{ p.appointment.patient_name }}
+                                {% else %}
+                                    {{ p.online_appointment.patient_name }}
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ p.created_at|date:"d.m.Y H:i" }}</small>
+                        </td>
+                        <td>
+                            {% if p.service %}{{ p.service.name }}
+                            {% elif p.lab_test %}{{ p.lab_test.name }}
+                            {% elif p.is_consultation %}Shifokor ko'rigi
+                            {% else %}Online qabul{% endif %}
+                        </td>
+                        <td class="fw-bold text-primary">{{ p.amount }} so'm</td>
+                        <td>{{ p.get_payment_type_display }}</td>
+                        <td>
+                            {% if p.is_paid %}
+                                <span class="badge bg-success py-2 px-3">To'langan</span>
+                            {% else %}
+                                <span class="badge bg-danger py-2 px-3">To'lanmagan</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <button onclick="viewPayment({{ p.id }})" class="btn btn-sm btn-outline-info" title="Ko'rish">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <a href="{% url 'payment_update' p.id %}" class="btn btn-sm btn-outline-primary" title="Tahrirlash">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="deletePayment({{ p.id }}, '{{ p.amount }}')" class="btn btn-sm btn-outline-danger" title="O'chirish">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center py-4">Ma'lumot topilmadi</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div> <!-- #payment-table-container yakuni -->
+</div>
+<script>
+// Batafsil ko'rish (ID bo'yicha)
+function viewPayment(id) {
+    fetch(`/dashboard/payments/${id}/view/`)
+        .then(res => res.json())
+        .then(data => {
+            Swal.fire({
+                title: 'To\'lov tafsilotlari',
+                html: `
+                    <div class="text-start">
+                        <p><b>Bemor:</b> ${data.patient}</p>
+                        <p><b>Summa:</b> ${data.amount} so'm</p>
+                        <p><b>To'lov turi:</b> ${data.type}</p>
+                        <p><b>Xizmat:</b> ${data.item}</p>
+                        <p><b>Holat:</b> ${data.status}</p>
+                        <p><b>Sana:</b> ${data.date}</p>
+                    </div>`,
+                confirmButtonText: 'Yopish'
+            });
+        });
+}
+
+// O'chirishni tasdiqlash
+function deletePayment(id, amount) {
+    Swal.fire({
+        title: 'O\'chirilsinmi?',
+        text: `${amount} so'mlik to'lovni o'chirmoqchisiz!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Ha, o\'chirilsin',
+        cancelButtonText: 'Bekor qilish'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/dashboard/payments/${id}/delete/`;
+        }
+    });
+}
+
+// --- REAL VAQTDA QIDIRUV VA FILTRLASH (YANGI) ---
+$(document).ready(function() {
+    let debounceTimer;
+
+    // Qidiruv maydoni (input) yoki holat (select) o'zgarganda ishlaydi
+    $('input[name="q"], select[name="status"]').on('input change', function() {
+        clearTimeout(debounceTimer);
+        let query = $('input[name="q"]').val();
+        let status = $('select[name="status"]').val();
+
+        // Serverga har bir harf uchun emas, yozishdan to'xtaganda so'rov yuborish (300ms kutish)
+        debounceTimer = setTimeout(function() {
+            $.ajax({
+                url: window.location.pathname,
+                data: {
+                    'q': query,
+                    'status': status
+                },
+                success: function(data) {
+                    // Serverdan kelgan HTML ichidan faqat #payment-table-container ni olib almashtiradi
+                    let newTable = $(data).find('#payment-table-container').html();
+                    $('#payment-table-container').html(newTable);
+                },
+                error: function(err) {
+                    console.error("Qidiruvda xatolik:", err);
+                }
+            });
+        }, 300);
+    });
+});
+</script>
+{% endblock %}

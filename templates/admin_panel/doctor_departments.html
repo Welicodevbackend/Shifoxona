@@ -1,0 +1,118 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block title %}Bo'limlar boshqaruvi | BDS{% endblock %}
+
+{% block content %}
+<style>
+    .search-section {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        border: 1px solid #e2e8f0;
+    }
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    }
+    .table thead th {
+        background-color: #f8fafc;
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 15px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    .dept-img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+    .status-badge {
+        background: #f0fdf4; color: #16a34a; font-size: 0.75rem;
+        padding: 6px 12px; border-radius: 6px; font-weight: 600; border: 1px solid #dcfce7;
+    }
+    .action-view {
+        color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 8px; transition: 0.2s;
+    }
+    .action-view:hover { background: #3b82f6; color: white; }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark m-0">Klinika Bo'limlari</h3>
+    </div>
+
+    <div class="search-section">
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label class="form-label small fw-bold text-muted">Bo'lim nomi bo'yicha qidirish</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0"
+                           placeholder="Yozishni boshlang..." value="{{ search_query }}">
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">Saralash</label>
+                <select id="sortSelect" class="form-select">
+                    <option value="-created_at">Yangi qo'shilganlar</option>
+                    <option value="created_at">Eskilar birinchi</option>
+                    <option value="name">Nomi bo'yicha (A-Z)</option>
+                    <option value="-name">Nomi bo'yicha (Z-A)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Rasm</th>
+                        <th>Bo'lim Nomi</th>
+                        <th>Yaratilgan Sana</th>
+                        <th class="text-center">Xizmatlar</th>
+                        <th class="text-end pe-4">Ko'rish</th>
+                    </tr>
+                </thead>
+                <tbody id="departmentTableBody">
+                    {% include 'admin_panel/partials/doctor_department_table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const tableBody = document.getElementById('departmentTableBody');
+
+    function updateTable() {
+        const q = searchInput.value;
+        const sort = sortSelect.value;
+        const url = `?q=${q}&sort=${sort}`;
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tableBody.innerHTML = html;
+        });
+    }
+
+    // Har bir harf yozilganda qidirish
+    searchInput.addEventListener('input', updateTable);
+
+    // Saralash o'zgarganda qidirish
+    sortSelect.addEventListener('change', updateTable);
+</script>
+{% endblock %}

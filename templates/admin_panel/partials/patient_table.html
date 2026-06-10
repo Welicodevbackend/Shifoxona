@@ -1,0 +1,35 @@
+{% for patient in patients %}
+<tr>
+    <td class="ps-4 fw-bold text-primary">#{{ patient.id }}</td>
+    <td>
+        <a href="{% url 'patient_detail_dashboard' patient.id %}" class="text-dark fw-bold text-decoration-none hover-link">
+            {{ patient.full_name }}
+        </a>
+    </td>
+    <td>{{ patient.phone }}</td>
+    <td>
+        {% if patient.gender == 'male' %}
+            <span class="badge bg-soft-info text-info" style="background: #e0f2fe;">Erkak</span>
+        {% else %}
+            <span class="badge bg-soft-danger text-danger" style="background: #fee2e2;">Ayol</span>
+        {% endif %}
+    <td class="text-end pe-4">
+    <div class="btn-group position-static"> <button type="button" class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+            <li><a class="dropdown-item py-2" href="{% url 'patient_detail_dashboard' patient.id %}">
+                <i class="fas fa-eye text-primary me-2"></i> Ko'rish</a>
+            </li>
+            <li><button class="dropdown-item py-2" onclick="openEditModal('{{ patient.id }}')">
+                <i class="fas fa-edit text-warning me-2"></i> Tahrirlash</button>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item py-2 text-danger" onclick="openDeleteModal('{{ patient.id }}', '{{ patient.full_name }}')">
+                <i class="fas fa-trash me-2"></i> O'chirish</button>
+            </li>
+        </ul>
+    </div>
+</td>
+</tr>
+{% endfor %}

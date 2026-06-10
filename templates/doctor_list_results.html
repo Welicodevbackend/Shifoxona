@@ -1,0 +1,12 @@
+{% load static %}
+{% for doctor in doctors %}
+  <div class="col-lg-4 col-md-6">
+    <div class="doctor-card">
+      <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}{% static 'assets/img/health/staff-10.webp' %}{% endif %}" alt="">
+      <h5>{{ doctor.full_name }}</h5>
+      <p>{{ doctor.department.name }}</p>
+    </div>
+  </div>
+{% empty %}
+  <p>Hech kim topilmadi.</p>
+{% endfor %}

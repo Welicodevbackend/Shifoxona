@@ -1,0 +1,108 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block title %}Profilni tahrirlash | Bobur Doktor Shifo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">Shaxsiy ma'lumotlar</h3>
+            <p class="text-muted small mb-0">Profilingiz ma'lumotlarini shu yerda yangilashingiz mumkin.</p>
+        </div>
+        <a href="{% url 'doctor_admin_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="fas fa-arrow-left me-1"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="bg-primary p-4 text-white">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                            <i class="fas fa-user-edit fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Profilni tahrirlash</h5>
+                            <small class="opacity-75">ID: #{{ request.user.id }} | Role: Shifokor</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase">To'liq ism-sharif</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-user text-primary"></i></span>
+                                    <input type="text" name="full_name" class="form-control form-control-lg bg-light border-0 shadow-none" 
+                                           value="{{ staff.full_name }}" placeholder="Ismingizni kiriting" required>
+                                </div>
+                                <div class="invalid-feedback">Iltimos, ismingizni kiriting.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase">Telefon raqam</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-phone-alt text-primary"></i></span>
+                                    <input type="text" name="phone" class="form-control form-control-lg bg-light border-0 shadow-none" 
+                                           value="{{ staff.phone_number }}" placeholder="+998XXXXXXXXX" required>
+                                </div>
+                                <div class="invalid-feedback">Iltimos, telefon raqamingizni kiriting.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold text-uppercase">Mutaxassislik bo'limi</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-briefcase-medical text-muted"></i></span>
+                                    <input type="text" class="form-control form-control-lg bg-light border-0" 
+                                           value="{{ staff.department.name|default:'Mutaxassis' }}" readonly disabled>
+                                </div>
+                                <small class="text-muted italic">* Bo'limni o'zgartirish uchun administratorga murojaat qiling.</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 opacity-50">
+
+                        <div class="d-flex justify-content-end gap-3">
+                            <button type="reset" class="btn btn-light px-4 rounded-pill fw-bold text-muted">
+                                <i class="fas fa-undo me-1"></i> Tiklash
+                            </button>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold shadow-sm">
+                                <i class="fas fa-save me-1"></i> O'zgarishlarni saqlash
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-lg-2 d-none d-xl-block">
+            <div class="alert alert-info border-0 shadow-sm rounded-4 p-4">
+                <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Eslatma</h6>
+                <p class="small mb-0">Ushbu ma'lumotlar bemorlarga navbat olish jarayonida va tibbiy varaqlarda ko'rinadi. Ma'lumotlarning aniqligiga ishonch hosil qiling.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        background-color: #fff !important;
+        border: 1px solid #38bdf8 !important;
+        box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.1) !important;
+    }
+    .input-group-text {
+        border-radius: 0.5rem 0 0 0.5rem !important;
+    }
+    .form-control {
+        border-radius: 0 0.5rem 0.5rem 0 !important;
+    }
+    .card {
+        transition: transform 0.2s ease;
+    }
+</style>
+{% endblock %}

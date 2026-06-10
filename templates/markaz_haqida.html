@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Markaz Haqida - BOBUR DOKTOR SHIFO{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<main class="main">
+
+
+<!--  <div class="page-title" style="background: url("{% static 'assets/img/ssss.jpg' %}") center 25% no-repeat; background-size: cover; padding: 120px 0 60px 0; position: relative;">-->
+<!--    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);"></div>-->
+<!--    <div class="container text-center" style="position: relative; z-index: 1;">-->
+<!--      <h1 class="text-white fw-bold display-4">Markaz Haqida</h1>-->
+<!--    </div>-->
+<!--  </div>-->
+
+{% load static %}
+{% static 'assets/img/ssss.jpg' as bg_url %}
+
+<div class="page-title" style="background: url('{{ bg_url }}') center 25% no-repeat; background-size: cover; padding: 150px 0 30px 0; position: relative;">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);"></div>
+
+  <div class="container text-center" style="position: relative; z-index: 1;">
+    <h1 class="text-white fw-bold display-4">Markaz Haqida</h1>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+        </li>
+        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+          Markaz Haqida
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+  <section id="about" class="about section py-5">
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-6" data-aos="fade-up">
+          <div class="section-header mb-4">
+            <h6 class="text-info fw-bold text-uppercase mb-2">Eng yaxshi tibbiy xizmat</h6>
+            <h2 class="fw-bold display-5" style="color: #2c3155;">BOBUR DOKTOR SHIFO <br><span style="color: #00a0e3;">Tibbiyot Markazi</span></h2>
+          </div>
+          <p class="lead fw-bold text-dark mb-4" style="line-height: 1.8; text-align: justify;">
+            Markazimizda jarrohlik, urologiya, transplantologiya, ginekologiya, kardiologiya va nevrologiya kabi ko'plab zamonaviy bo'limlar faoliyat ko'rsatmoqda. Bizning asosiy maqsadimiz  xalqaro standartlarga javob beradigan yuqori texnologik uskunalar va o'z sohasining eng malakali mutaxassislari yordamida har bir bemorga sifatli, tezkor va ishonchli tibbiy yordam ko'rsatishdir. Biz nafaqat davolash, balki kasalliklarni barvaqt aniqlash va profilaktika qilishga ham katta e'tibor qaratamiz.
+          </p>
+          <div class="about-features row g-3">
+            <div class="col-md-6"><div class="p-3 shadow-sm rounded bg-light border-start border-4 border-info fw-bold">Markaz 500 o'ringa mo'ljallangan</div></div>
+            <div class="col-md-6"><div class="p-3 shadow-sm rounded bg-light border-start border-4 border-info fw-bold">1000+ ilg'or uskunalar</div></div>
+            <div class="col-md-6"><div class="p-3 shadow-sm rounded bg-light border-start border-4 border-info fw-bold">Yiliga 3000+ operatsiyalar</div></div>
+            <div class="col-md-6"><div class="p-3 shadow-sm rounded bg-light border-start border-4 border-info fw-bold">Xalqaro hamkorlik mavjud</div></div>
+          </div>
+        </div>
+        <div class="col-lg-6" data-aos="zoom-in">
+          <div class="position-relative overflow-hidden rounded-4 shadow-lg">
+            <img src="{% static 'assets/img/ssss.jpg' %}" class="img-fluid w-100" style="height: 400px; object-fit: cover;" alt="">
+            <a href="https://www.youtube.com/watch?v=XZGbfSQdl6U" class="glightbox play-btn"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="departments section py-5 bg-light">
+    <div class="container text-center mb-5">
+      <h6 class="text-info fw-bold text-uppercase">Bizning yo'nalishlar</h6>
+      <h2 class="fw-bold display-6" style="color: #2c3155;">Tibbiyot Bo'limlari</h2>
+      <div class="mx-auto" style="width: 80px; height: 4px; background: #00a0e3; margin-top: 10px;"></div>
+    </div>
+
+    <div class="container-fluid px-md-5">
+      <div class="row g-4 justify-content-center">
+        {% for dept in departments %}
+        <div class="col-lg-4 col-md-6 px-lg-4"> <div class="dept-card h-100 position-relative overflow-hidden rounded-4 shadow-sm bg-white border-0">
+            <div class="dept-img-container" style="aspect-ratio: 16/10; overflow: hidden;">
+                <img src="{{ dept.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ dept.name }}">
+            </div>
+            <div class="dept-overlay d-flex flex-column align-items-center justify-content-center p-4 text-center">
+                <h4 class="text-white fw-bold mb-3">{{ dept.name }}</h4>
+                <a href="{% url 'departments_page' %}?filter=.dept-{{ dept.id }}" class="btn btn-light rounded-pill fw-bold px-4">Batafsil</a>
+            </div>
+            <div class="p-4 text-center bg-white border-top">
+                <h3 class="m-0 fw-bold text-dark">{{ dept.name }}</h3>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="services-extra py-5" style="background-color: #f8f9fa;">
+    <div class="container text-center mb-5">
+      <h6 class="text-info fw-bold text-uppercase">Sifat va Qulaylik</h6>
+      <h2 class="fw-bold display-6" style="color: #2c3155;">Siz uchun yaratilgan maxsus xizmatlarimiz</h2>
+      <p class="text-muted mt-3 fs-5 mx-auto" style="max-width: 800px;">Biz bemorlarimizga nafaqat davolash xizmatlarini, balki ularning qulayligi va xavfsizligini ta'minlovchi qo'shimcha imkoniyatlarni ham taqdim etamiz.</p>
+    </div>
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-lg-4">
+          <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-bottom border-4 border-info">
+            <i class="bi bi-telephone-inbound fs-1 text-info mb-3"></i>
+            <h5 class="fw-bold fs-4">Call-Markaz</h5>
+            <p class="text-muted">24/7 navbatga yozilish tizimi</p>
+            <span class="text-info fw-bold fs-4">+998 99 100-42-15</span>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-bottom border-4 border-warning">
+            <i class="bi bi-clock-history fs-1 text-warning mb-3"></i>
+            <h5 class="fw-bold fs-4">Kutish Zallari</h5>
+            <p class="text-muted">Bemor yaqinlari uchun shinam va qulay kutish joylari</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="p-4 bg-white rounded-4 shadow-sm h-100 border-bottom border-4 border-success">
+            <i class="bi bi-truck fs-1 text-success mb-3"></i>
+            <h5 class="fw-bold fs-4">Tez Yordam</h5>
+            <p class="text-muted">Eng so'nggi rusumdagi jihozlar bilan ta'minlangan avtopark</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <section class="doctors py-5 bg-white overflow-hidden">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-5">
+        <div class="text-start">
+          <h6 class="text-info fw-bold text-uppercase">Bizning tajribali jamoamiz</h6>
+          <h2 class="fw-bold display-6 mb-0" style="color: #2c3155;">Malakali Mutaxassislarimiz</h2>
+          <div style="width: 80px; height: 4px; background: #00a0e3; margin-top: 10px;"></div>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="swiper-button-prev-custom shadow-sm"><i class="bi bi-chevron-left"></i></div>
+          <div class="swiper-button-next-custom shadow-sm"><i class="bi bi-chevron-right"></i></div>
+        </div>
+      </div>
+
+      <div class="swiper shifokorlar-swiper">
+        <div class="swiper-wrapper">
+          {% for doctor in doctors %}
+          <div class="swiper-slide">
+            <div class="doctor-card h-100 bg-white shadow-sm border overflow-hidden" style="border-radius: 15px;">
+              <div class="doctor-img-box">
+                <img src="{{ doctor.photo.url }}" class="w-100 h-100" alt="{{ doctor.full_name }}" style="object-fit: cover; height: 300px;">
+              </div>
+              <div class="p-3">
+                <h5 class="fw-bold text-dark text-center mb-1 fs-5">{{ doctor.full_name }}</h5>
+                <p class="text-primary fw-bold small text-center mb-3">{{ doctor.doctor_details.specialization|upper }}</p>
+
+                <div class="schedule-box border-top pt-3">
+                   <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted fw-bold fs-6">Dush - Sesh:</span>
+                      <span class="fw-bold text-dark fs-6">09:00 - 17:00</span>
+                   </div>
+                   <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted fw-bold fs-6">Chor - Pay:</span>
+                      <span class="fw-bold text-dark fs-6">09:00 - 17:00</span>
+                   </div>
+                   <div class="d-flex justify-content-between">
+                      <span class="text-muted fw-bold fs-6">Jum - Shan:</span>
+                      <span class="fw-bold text-danger fs-6">09:00 - 16:00</span>
+                   </div>
+                </div>
+
+                <a href="{% url 'doctor_detail' doctor.pk %}" class="btn btn-outline-info w-100 mt-3 rounded-pill fw-bold">
+                    Batafsil
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-scrollbar mt-4"></div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<style>
+  /* Bo'limlar rasmlari kattaroq va aniq */
+  .dept-card img {
+    transition: 0.6s ease;
+  }
+  .dept-card:hover img {
+    transform: scale(1.1);
+  }
+
+  /* Shifokor rasmlari */
+  .doctor-img-box {
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    background: #f8f9fa;
+  }
+  .doctor-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Custom Slider Buttons */
+  .swiper-button-next-custom, .swiper-button-prev-custom {
+    width: 50px; height: 50px; background: #fff; border: 1px solid #00a0e3;
+    color: #00a0e3; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; transition: 0.3s;
+  }
+  .swiper-button-next-custom:hover, .swiper-button-prev-custom:hover {
+    background: #00a0e3; color: #fff;
+  }
+
+  /* Play Button */
+  .play-btn {
+    width: 80px; height: 80px; background: #00a0e3; border-radius: 50%;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn::after {
+    content: ""; border-left: 18px solid #fff; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 6px;
+  }
+
+  /* Department Overlay */
+  .dept-card .dept-overlay {
+    position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+    background: rgba(0, 160, 227, 0.85); opacity: 0; transition: 0.4s;
+  }
+  .dept-card:hover .dept-overlay { opacity: 1; }
+</style>
+
+<script>
+  var swiper = new Swiper(".shifokorlar-swiper", {
+    slidesPerView: 1,
+    spaceBetween: 30,
+    loop: true,
+    scrollbar: { el: ".swiper-scrollbar", draggable: true },
+    navigation: {
+      nextEl: ".swiper-button-next-custom",
+      prevEl: ".swiper-button-prev-custom",
+    },
+    breakpoints: {
+      640: { slidesPerView: 2 },
+      992: { slidesPerView: 3 },
+      1200: { slidesPerView: 4 },
+    },
+  });
+</script>
+{% endblock %}

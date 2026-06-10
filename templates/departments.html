@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bo'limlar - BOBUR DOKTOR SHIFO{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  /* 1. Hero Section - Sarlavhalarni 1-rasmdagidek aniq qilish */
+  /*.page-header {*/
+  /*  background: linear-gradient(rgba(10, 15, 45, 0.85), rgba(10, 15, 45, 0.85)), url("{% static 'assets/img/ssss.jpg' %}");*/
+  /*  background-size: cover;*/
+  /*  background-position: center;*/
+  /*  padding: 250px 0 60px;*/
+  /*  color: #fff;*/
+  /*  margin-top: -95px;*/
+  /*  border-bottom: 8px solid #00a0e3;*/
+  /*}*/
+
+  /*.page-header h1 {*/
+  /*  font-size: 4rem;*/
+  /*  font-weight: 900;*/
+  /*  text-transform: uppercase;*/
+  /*  text-shadow: 4px 4px 20px rgba(0,0,0,1); !* Maksimal darajada aniq yozuv *!*/
+  /*  letter-spacing: 2px;*/
+  /*  margin-bottom: 15px;*/
+  /*}*/
+  /* 1. Hero Section - Namuna asosida yangilangan */
+  .page-header {
+    {% static 'assets/img/ssss.jpg' as bg_url %}
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ bg_url }}');
+    background-size: cover;
+    background-position: center 25%;
+    padding: 170px 0 40px 0; /* Paddingni namuna kabi kamaytirdik */
+    color: #fff;
+    margin-top: 1px; /* Navbar bilan birikish uchun qoladi */
+    position: relative;
+    border-bottom: 5px solid #00a0e3;
+  }
+
+  .page-header h1 {
+    font-size: 3.5rem; /* Biroz kichraytirildi */
+    font-weight: 800;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+  }
+
+  /* 2. Kenglikni boshqarish */
+  .custom-container {
+    width: 100%;
+    padding-right: 3%;
+    padding-left: 3%;
+    margin: 0 auto;
+  }
+
+  /* 3. Sidebar (Chap tomon) */
+  .sticky-sidebar-wrapper {
+    position: sticky;
+    top: 110px;
+  }
+
+  .category-sidebar {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    padding: 20px 0;
+    border: 1px solid #eee;
+    margin-bottom: 25px;
+  }
+
+  .dept-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 25px;
+    color: #2c3155;
+    text-decoration: none;
+    font-weight: 700;
+    border-left: 5px solid transparent;
+    transition: 0.3s ease;
+  }
+
+  .dept-nav-link.active {
+    background: #f0f7ff;
+    color: #00a0e3;
+    border-left-color: #00a0e3;
+  }
+
+  /* Ish vaqti bloki dizayni */
+  .work-schedule-card {
+    background: #fff;
+    border-radius: 15px;
+    border: 2px solid #f0f0f0;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+
+  .work-schedule-card h5 {
+    color: #2c3155;
+    font-weight: 800;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* --- YANGI: Navbat olish formasi stili --- */
+  .appointment-sidebar-card {
+    background-color: #00a0e3 !important;
+    border: none !important;
+  }
+  .appointment-sidebar-card h5 { color: white !important; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 10px; }
+  .appointment-sidebar-card input, .appointment-sidebar-card select {
+    background: rgba(255,255,255,0.2) !important;
+    border: none !important;
+    color: white !important;
+    margin-bottom: 10px;
+  }
+  .appointment-sidebar-card input::placeholder { color: rgba(255,255,255,0.7); }
+  .appointment-sidebar-card select option { color: #333; }
+  .appointment-sidebar-card input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+  .schedule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e5e5e5;
+  }
+
+  .day-name { color: #555; font-weight: 600; }
+  .day-time { color: #00a0e3; font-weight: 700; }
+
+  /* 4. Content dizayni */
+  .dept-main-img {
+    width: 100%;
+    height: 550px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  }
+
+  .content-card {
+    background: #fff;
+    border-radius: 25px;
+    padding: 50px;
+    margin-top: -70px;
+    position: relative;
+    z-index: 5;
+    box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+  }
+
+  .doctor-card-hover:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 45px rgba(0, 160, 227, 0.15) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main">
+
+  <section class="page-header text-center">
+  <div class="container" style="position: relative; z-index: 1;">
+    <h1 data-aos="fade-up" class="text-white fw-bold display-4">
+      Bo'limlar
+    </h1>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center mb-0" style="background: transparent;">
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Bosh sahifa</a>
+        </li>
+        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+          Markaz bo'limlari
+        </li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+  <section class="py-5 bg-light">
+    <div class="custom-container">
+      <div class="row g-5">
+
+        <div class="col-lg-4 col-xl-3">
+          <div class="sticky-sidebar-wrapper">
+
+            <div class="category-sidebar nav nav-pills flex-column" role="tablist">
+              <h5 class="px-4 mb-3 fw-bold text-dark text-uppercase small">Tibbiy Yo'nalishlar</h5>
+              {% for dept in departments %}
+              <a class="dept-nav-link {% if forloop.first %}active{% endif %}"
+                 id="tab-{{ dept.id }}"
+                 data-bs-toggle="pill"
+                 href="#pane-{{ dept.id }}"
+                 role="tab"
+                 onclick="updateBreadcrumb('{{ dept.name }}')">
+                <span>{{ dept.name }}</span>
+                <i class="bi bi-arrow-right-circle"></i>
+              </a>
+              {% endfor %}
+            </div>
+
+            <div class="work-schedule-card">
+              <h5><i class="bi bi-calendar-check-fill text-info me-2"></i> Qabul kunlari</h5>
+              <div class="schedule-row"><span class="day-name">Dushanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="schedule-row"><span class="day-name">Seshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="schedule-row"><span class="day-name">Chorshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="schedule-row"><span class="day-name">Payshanba</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="schedule-row"><span class="day-name">Juma</span> <span class="day-time">9:00 - 17:00</span></div>
+              <div class="schedule-row"><span class="day-name">Shanba</span> <span class="day-time">9:00 - 15:00</span></div>
+              <div class="schedule-row border-0"><span class="day-name text-danger">Yakshanba</span> <span class="badge bg-danger">Yopiq</span></div>
+            </div>
+
+            <div class="work-schedule-card appointment-sidebar-card">
+              <h5><i class="bi bi-clock-fill me-2"></i> Navbat Olish</h5>
+              <form action="{% url 'book_appointment' %}" method="POST">
+  {% csrf_token %}
+  <input type="text" name="patient_name" class="form-control" placeholder="Ismingiz *" required>
+  <input type="text" name="patient_phone" class="form-control" placeholder="Telefon *" required>
+
+  <select name="department" id="sidebarDepartmentSelect" class="form-select mb-2" required>
+      <option value="" selected disabled>Bo'limni tanlang</option>
+      {% for dept in departments %}
+          <option value="{{ dept.id }}">{{ dept.name }}</option>
+      {% endfor %}
+  </select>
+
+  <select name="doctor" id="sidebarDoctorSelect" class="form-select mb-2" required disabled>
+      <option value="" selected disabled>Avval bo'limni tanlang</option>
+  </select>
+
+  <input type="date" name="date" id="sidebarDateInput" class="form-control mb-2" required>
+
+  <select name="time_slot" id="sidebarTimeSelect" class="form-select mb-2" required disabled>
+      <option value="" selected disabled>Vaqtni tanlang *</option>
+  </select>
+
+                <textarea name="notes" class="form-control mb-2" placeholder="Shikoyatingiz yoki qo'shimcha eslatma (ixtiyoriy)" rows="3" style="border-radius: 8px;"></textarea>
+  <button type="submit" class="btn btn-light w-100 fw-bold text-primary mt-2">TASDIQLASH</button>
+</form>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-lg-8 col-xl-9">
+          <div class="tab-content pt-0">
+            {% for dept in departments %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pane-{{ dept.id }}" role="tabpanel">
+
+              <img src="{% if dept.image %}{{ dept.image.url }}{% else %}{% static 'assets/img/default.jpg' %}{% endif %}" class="dept-main-img">
+
+              <div class="content-card">
+                <h2 class="fw-bold mb-4" style="color: #2c3155; font-size: 2.5rem;">{{ dept.name }}</h2>
+                <div class="text-muted" style="line-height: 2.1; font-size: 1.2rem;">
+                  {{ dept.description|linebreaks }}
+                </div>
+
+                <div class="mt-5 pt-5 border-top">
+                  <div class="d-flex align-items-center justify-content-between mb-5">
+                    <h3 class="fw-bold text-dark m-0" style="border-left: 6px solid #00a0e3; padding-left: 20px;">
+                      Bizning malakali mutaxasislarimiz.
+                    </h3>
+                  </div>
+
+                  <div class="row g-4">
+  {% for staff in random_doctors %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden doctor-card-hover" style="transition: all 0.3s ease;">
+        <div class="position-relative">
+          {% if staff.photo %}
+            <img src="{{ staff.photo.url }}" class="card-img-top" style="height: 320px; object-fit: cover; object-position: top;">
+          {% else %}
+            <img src="{% static 'assets/img/default-doctor.jpg' %}" class="card-img-top" style="height: 320px; object-fit: cover;">
+          {% endif %}
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);"></div>
+        </div>
+
+        <div class="card-body p-4 text-center">
+          <h5 class="fw-bold mb-1" style="color: #2c3155; font-size: 1.3rem;">{{ staff.full_name }}</h5>
+          <p class="text-info fw-600 mb-3" style="font-size: 0.95rem;">
+            {% if staff.doctor_details %}
+              {{ staff.doctor_details.specialization|upper }}
+            {% else %}
+              MUTAXASSIS
+            {% endif %}
+          </p>
+          <a href="{% url 'doctor_detail' staff.pk %}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm" style="background: #00a0e3; border: none;">
+    Qabulga yozilish
+</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12 text-center py-4">
+        <p class="text-muted italic">Hozircha mutaxassislar haqida ma'lumot mavjud emas.</p>
+    </div>
+  {% endfor %}
+</div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  function updateBreadcrumb(name) {
+    document.getElementById('breadcrumb-dept').innerText = name;
+  }
+
+  // --- YANGI: Slotlarni dinamik yuklash ---
+  document.getElementById('sidebarDateInput').addEventListener('change', function() {
+      const doctorId = document.getElementById('sidebarDoctorSelect').value;
+      const date = this.value;
+      const select = document.getElementById('sidebarTimeSelect');
+
+      if(!doctorId) { alert("Avval shifokorni tanlang!"); return; }
+
+      fetch(`/api/available-slots/?doctor=${doctorId}&date=${date}`)
+          .then(res => res.json())
+          .then(data => {
+              select.innerHTML = '<option disabled selected>Vaqtni tanlang *</option>';
+              data.available_slots.forEach(slot => {
+                  select.innerHTML += `<option value="${slot}">${slot}</option>`;
+              });
+          });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deptSelect = document.getElementById('sidebarDepartmentSelect');
+    const doctorSelect = document.getElementById('sidebarDoctorSelect');
+    const dateInput = document.getElementById('sidebarDateInput');
+    const timeSelect = document.getElementById('sidebarTimeSelect');
+
+    // --- 1. BO'LIM O'ZGARSA: SHIFOKORLARNI YUKLASH ---
+    deptSelect.addEventListener('change', function() {
+        const deptId = this.value;
+
+        // Keyingi bosqichlarni tozalash va yopish
+        doctorSelect.innerHTML = '<option value="" selected disabled>Yuklanmoqda...</option>';
+        doctorSelect.disabled = false;
+        dateInput.value = '';
+        dateInput.disabled = true;
+        timeSelect.innerHTML = '<option value="" selected disabled>Vaqtni tanlang *</option>';
+        timeSelect.disabled = true;
+
+        fetch(`/get-doctors-by-dept/?dept_id=${deptId}`)
+            .then(res => res.json())
+            .then(data => {
+                doctorSelect.innerHTML = '<option value="" selected disabled>Shifokorni tanlang *</option>';
+                data.doctors.forEach(dr => {
+                    doctorSelect.innerHTML += `<option value="${dr.id}">${dr.full_name}</option>`;
+                });
+            });
+    });
+
+    // --- 2. SHIFOKOR TANLANSA: SANANI OCHISH ---
+    doctorSelect.addEventListener('change', function() {
+        if(this.value) {
+            dateInput.disabled = false;
+            // Kalendar cheklovlarini yangilash
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+
+            const formatDate = (date) => {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            };
+            dateInput.min = formatDate(today);
+            dateInput.max = formatDate(maxDate);
+        }
+    });
+
+    // --- 3. SANA TANLANSA: YAKSHANBA TEKSHIRUVI VA SLOTLAR ---
+    dateInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        if (selectedDate.getUTCDay() === 0) { // 0 - Yakshanba
+            this.value = '';
+            Swal.fire({
+                icon: 'warning',
+                title: 'Dam olish kuni',
+                text: 'Yakshanba kuni qabul mavjud emas. Iltimos, boshqa kunni tanlang.',
+                confirmButtonColor: '#00a0e3'
+            });
+            return;
+        }
+
+        const doctorId = doctorSelect.value;
+        const date = this.value;
+
+        if (doctorId && date) {
+            timeSelect.disabled = false;
+            timeSelect.innerHTML = '<option value="" selected disabled>Yuklanmoqda...</option>';
+
+            fetch(`/get-available-slots/?doctor=${doctorId}&date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    timeSelect.innerHTML = '<option value="" selected disabled>Vaqtni tanlang *</option>';
+                    if (data.available_slots && data.available_slots.length > 0) {
+                        data.available_slots.forEach(slot => {
+                            timeSelect.innerHTML += `<option value="${slot}">${slot}</option>`;
+                        });
+                    } else {
+                        timeSelect.innerHTML = '<option value="" disabled>Bo‘sh vaqt qolmadi</option>';
+                    }
+                });
+        }
+    });
+});
+
+// --- 4. SUCCESS/ERROR MESSAGES (SWEETALERT) ---
+  {% if messages %}
+    {% for message in messages %}
+        (function() {
+            let msg = "{{ message|safe }}";
+            if (msg.startsWith("SUCCESS|")) {
+                let p = msg.split("|");
+                Swal.fire({
+                    title: 'Navbat tasdiqlandi!',
+                    icon: 'success',
+                    html: `
+                        <div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 2px dashed #00a0e3;">
+                            <p><b>Bemor:</b> ${p[1]}</p>
+                            <p><b>Yo'nalish:</b> ${p[2]}</p>
+                            <p><b>Shifokor:</b> ${p[3]}</p>
+                            <p><b>Sana:</b> ${p[4]}</p>
+                            <p><b>Vaqt:</b> ${p[5]}</p>
+                        </div>`,
+                    confirmButtonColor: '#00a0e3'
+                });
+            } else if (msg.startsWith("XATO|")) {
+                Swal.fire({ icon: 'error', title: 'Xatolik!', text: msg.split("|")[1] });
+            }
+        })();
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}

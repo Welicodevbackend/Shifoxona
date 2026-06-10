@@ -1,0 +1,38 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <a href="{% url 'lab_tests_list_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mb-3">
+                    <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill" style="background: #eff6ff;">
+                        Tahlil ID: #{{ lab_test.id }}
+                    </span>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">{{ lab_test.name }}</h2>
+                <h3 class="text-success fw-bold mb-4">{{ lab_test.price }} so'm</h3>
+                
+                <hr>
+                
+                <div class="row text-start mt-4">
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">Yaratilgan vaqt</p>
+                        <p class="fw-bold">{{ lab_test.created_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p class="text-muted small mb-1">Status</p>
+                        <p class="text-success fw-bold">Faol</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

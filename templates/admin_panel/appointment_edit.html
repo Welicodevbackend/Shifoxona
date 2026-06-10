@@ -1,0 +1,50 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-0 text-center">
+                    <h5 class="fw-bold m-0"><i class="fas fa-edit me-2 text-warning"></i> Navbatni tahrirlash</h5>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Bemor ismi</label>
+                                <input type="text" name="patient_name" value="{{ appointment.patient_name }}" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Telefon</label>
+                                <input type="text" name="patient_phone" value="{{ appointment.patient_phone }}" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Sana</label>
+                                <input type="date" name="date" value="{{ appointment.date|date:'Y-m-d' }}" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Vaqt</label>
+                                <input type="time" name="time_slot" value="{{ appointment.time_slot|time:'H:i' }}" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Holati</label>
+                                <select name="status" class="form-select rounded-3">
+                                    {% for key, value in appointment.STATUS_CHOICES %}
+                                        <option value="{{ key }}" {% if appointment.status == key %}selected{% endif %}>{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between p-4">
+                        <a href="{% url 'appointments_list' %}" class="btn btn-light px-4">Bekor qilish</a>
+                        <button type="submit" class="btn btn-warning px-4 fw-bold">Saqlash</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

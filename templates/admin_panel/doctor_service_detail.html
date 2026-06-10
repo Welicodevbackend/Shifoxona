@@ -1,0 +1,45 @@
+{% extends 'admin_panel/base_doctor.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <a href="{% url 'doctor_services_list_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <i class="fas fa-image fa-4x text-muted opacity-25"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body p-4 text-center">
+                    <h4 class="fw-bold text-dark mb-2">{{ service.name }}</h4>
+                    <span class="badge bg-primary px-3 py-2 rounded-pill mb-3">
+                        {{ service.department.name }}
+                    </span>
+                    <h3 class="text-success fw-bold m-0">{{ service.price }} so'm</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">Xizmat tavsifi</h5>
+                <div class="text-muted" style="line-height: 1.8;">
+                    {% if service.description %}
+                        {{ service.description|safe }}
+                    {% else %}
+                        <p class="fst-italic">Ushbu xizmat uchun tavsif kiritilmagan.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

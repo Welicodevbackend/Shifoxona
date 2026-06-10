@@ -1,0 +1,39 @@
+<div class="modal-header bg-warning text-white border-0">
+    <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i> Navbatni tahrirlash</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<form action="{% url 'appointment_edit' appointment.id %}" method="POST">
+    {% csrf_token %}
+    <div class="modal-body p-4">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label small fw-bold">Bemor ismi</label>
+                <input type="text" name="patient_name" value="{{ appointment.patient_name }}" class="form-control rounded-3" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Telefon</label>
+                <input type="text" name="patient_phone" value="{{ appointment.patient_phone }}" class="form-control rounded-3" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Holati</label>
+                <select name="status" class="form-select rounded-3">
+                    {% for key, value in appointment.STATUS_CHOICES %}
+                        <option value="{{ key }}" {% if appointment.status == key %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Sana</label>
+                <input type="date" name="date" value="{{ appointment.date|date:'Y-m-d' }}" class="form-control rounded-3" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Vaqt</label>
+                <input type="time" name="time_slot" value="{{ appointment.time_slot|time:'H:i' }}" class="form-control rounded-3" required>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Bekor qilish</button>
+        <button type="submit" class="btn btn-warning px-4 fw-bold">Saqlash</button>
+    </div>
+</form>
