@@ -14,7 +14,7 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
 SECRET_KEY = 'django-insecure-pia_1hv^#715)2kq9==b!91o2#g@cfe$eiu&7le8)vsnbb_p&s'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
