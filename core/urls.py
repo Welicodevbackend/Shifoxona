@@ -24,7 +24,7 @@
 #     path('yangiliklar/<int:pk>/', news_detail, name='news_detail'),
 #     path('yangiliklar/view-count/<int:pk>/', increment_views_ajax, name='increment_views_ajax'),
 #     path('get-doctors-by-dept/', get_doctors_by_dept, name='get_doctors_by_dept'),
-#     path('ai-triage/', ai_triage_view, name='ai_triage'),
+#
 #
 #     path('login/', MyLoginView.as_view(), name='login'),
 #     path('reception/dashboard/', reception_dashboard, name='reception_dash'),
@@ -95,7 +95,7 @@ urlpatterns = [
     # --- NAVBAT VA AI INTEGRATSIYA ---
     path('book-appointment/', book_appointment, name='book_appointment'),
     path('api/available-slots/', get_available_slots, name='available_slots'),
-    path('ai-triage/', ai_triage_view, name='ai_triage'),
+
 
 
     path('login/', MyLoginView.as_view(), name='login'),
@@ -266,12 +266,9 @@ urlpatterns = [
 
 
 
-    path('chat/', chatbot_page, name='chatbot_page'),
 
-    # Chatbot API (JavaScript ma'lumot yuborishi uchun)
-    path('api/chatbot/', chatbot_api, name='chatbot_api'),
 
-    # path('admin-test/', admin_demo_view, name='admin_test'),
+  
 
 
 ]
